@@ -1,0 +1,25 @@
+{
+  "name": "hoodie",
+  "version": "0.8.2",
+  "main": [
+    "./dist/hoodie.js"
+  ],
+  "ignore": [
+    "test/",
+    "src/",
+    "lib/",
+    "karma.conf.js",
+    "Gruntfile.js",
+    "node_modules"
+  ],
+  "homepage": "https://github.com/hoodiehq/hoodie.js",
+  "_release": "0.8.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.8.2",
+    "commit": "0a1e12365a8d7373f7522def622b001ed0baaeef"
+  },
+  "_source": "git://github.com/hoodiehq/hoodie.js.git",
+  "_target": "*",
+  "_originalSource": "hoodie"
+}

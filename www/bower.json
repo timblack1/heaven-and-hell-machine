@@ -1,0 +1,32 @@
+{
+  "name": "hhm",
+  "version": "0.0.0",
+  "authors": [
+    "Tim Black <tim@alwaysreformed.com>"
+  ],
+  "description": "The Heaven and Hell Machine helps you know from the Bible whether you are going to heaven or hell.",
+  "main": "assets/js/main.js",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "assets/vendor",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "backbone-hoodie": "~1.0.6",
+    "bootstrap.modalform": "~1.0.0",
+    "bootstrap": "~3.1.1",
+    "backbone-relational": "~0.8.8",
+    "mustache": "~0.8.1",
+    "backbone-couchdb": "*",
+    "requirejs-plugins": "~1.0.2",
+    "requirejs-text": "~2.0.12",
+    "jquery-migrate": "~1.2.1"
+  }
+}

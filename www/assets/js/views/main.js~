@@ -1,0 +1,10 @@
+define(
+   [
+        'views/QuestionAnswerContainer/main'
+    ], 
+    function(QuestionAnswerContainer){
+       return {
+           QuestionAnswerContainer:QuestionAnswerContainer
+       }
+    }
+)
