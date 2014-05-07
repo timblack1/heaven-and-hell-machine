@@ -13,11 +13,13 @@ define(
         },
         render: function(){
             $(this.el).html(Mustache.render(template, this.model.attributes));
-            // TODO: Disable appropriate nav link if at the first or last question
-            this.listenTo(this.$('.previous_question'), 'click', this.previous_question)
+            this.listenTo(this.$('#true, #false'), 'click', this.give_answer)
         },
-        previous_question:function(){
-            // TODO: Render the previous question
+        give_answer:function(event){
+            // TODO: Display scripture answers
+            // TODO: Play sound and provide overlay for whether they got it right or not.
+            //  E.g., thunder and lightning, or a glow and the sound of angels singing.
+            //  A variety of such good and bad sounds/overlays would be fun.
         }
     });
 

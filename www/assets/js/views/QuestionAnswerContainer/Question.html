@@ -1,12 +1,18 @@
-<a href='#' class='previous_question'>&larr; Previous</a>
-|
-<a href='#' class='next_question'>Next &rarr;</a>
 <h3>Question {{number}}:</h3>
 <p>{{{text}}}</p>
-<div class='radios'></div>
+<div class="btn-group" data-toggle="buttons">
+  <label class="btn btn-primary">
+    <input type="radio" name="answer" id="true"> True
+  </label>
+  <label class="btn btn-primary">
+    <input type="radio" name="answer" id="false"> False
+  </label></div>
 <p>
-    {{{scripture}}}
-    <br />
-    <em>{{reference}}</em>
+    {{#scripture}}
+        {{{text}}}
+        <br />
+        <em>{{reference}}</em>
+        <br />
+    {{/scripture}}
 </p>
 {{help}}
