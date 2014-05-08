@@ -11,17 +11,18 @@ define(
     return Backbone.View.extend({
         initialize: function(){
             _.bindAll(this, 'previous_question', 'next_question', 
-                'rerender_question')
+                'rerender_question', 'get_last_number')
+        },
+        events:{
+            "click .previous_question": 'previous_question',
+            "click .next_question":     'next_question'
         },
         render: function(){
             $(this.el).html(Mustache.render(mainTemplate));
+            this.delegateEvents()
             // Disable previous_question nav link since we're on question 1
             this.$('.previous_question').css({color:'lightgray'})
             
-            // TODO: Clicking this link returns "Uncaught TypeError: undefined is not a function"
-            this.listenTo(this.$('.previous_question'), 'click', this.previous_question)
-            this.listenTo(this.$('.next_question'), 'click', this.next_question)
-
             // TODO: Convert to use backbone-hoodie
             // TODO: Bootstrap the questions into the database
             // TODO: Load the questions into a collection
@@ -34,8 +35,8 @@ define(
             var Questions = Backbone.Collection.extend({
                 model:Question
             })
-            var questions = new Questions;
-            questions.add([
+            this.questions = new Questions;
+            this.questions.add([
                 {
                     original_number:1,
                     new_number:5,
@@ -174,11 +175,11 @@ define(
                 }
             ])
             // TODO: Move this setting into the config.
-            var use_new_numbers = false
-            if (use_new_numbers === false){
-                var question = questions.findWhere({original_number:1})
+            config.use_new_numbers = false
+            if (config.use_new_numbers === false){
+                var question = this.questions.findWhere({original_number:1})
             }else{
-                var question = questions.findWhere({new_number:1})
+                var question = this.questions.findWhere({new_number:1})
             }
             question.set('number', 1)
             this.question_view = new QuestionView({
@@ -189,21 +190,49 @@ define(
         },
         previous_question:function(){
             // Render the previous question
-            var number = question_view.model.number-1;
+            var number = this.question_view.model.get('number')-1;
+            this.rerender_question(number)
+            this.$('.next_question').css({color:''})
+            // Set .previous_question link to lightgray if there are no more questions
+            if (number === 1){
+                this.$('.previous_question').css({color:'lightgray'})
+            }
         },
         next_question:function(){
             // Render the next question
-            var number = question_view.model.number+1;
+            var number = this.question_view.model.get('number')+1;
+            this.rerender_question(number)
+            this.$('.previous_question').css({color:''})
+            // Set .next_question link to lightgray if there are no more questions
+            var last_number = this.get_last_number()
+            if (number === last_number){
+                this.$('.next_question').css({color:'lightgray'})
+            }
         },
         rerender_question:function(number){
-            if (use_new_numbers === false){
-                this.question_view.model = questions.findWhere({original_number:number})
-            }else{
-                this.question_view.model = questions.findWhere({new_number:number})
+            if (number !== 0 && number !== this.get_last_number()+1){
+                this.question_view.undelegateEvents()
+                if (config.use_new_numbers === false){
+                    var question = this.questions.findWhere({original_number:number})
+                }else{
+                    var question = this.questions.findWhere({new_number:number})
+                }
+                question.set('number', number)
+                this.question_view = new QuestionView({
+                    el:this.$('.question'),
+                    model:question
+                })
+                this.question_view.render()
             }
-            this.question_view.model.set('number', number)
-            this.question_view.render()
             // TODO: Disable appropriate nav link if at the first or last question
+        },
+        get_last_number:function(){
+            if (config.use_new_numbers === false){
+                var last_number = _.max(_.filter(this.questions.pluck('original_number'),function(item){ return typeof item !== 'undefined'; }))
+            }else{
+                var last_number = _.max(this.questions.pluck('new_number'))
+            }
+            return last_number
         }
     });
 
