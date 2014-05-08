@@ -7,6 +7,7 @@ require.config({
       "backbone_couchdb": "backbone-couchdb/backbone-couchdb",
       "backbone_relational": "vendor/backbone-relational/backbone-relational",
       "bootstrap": "vendor/bootstrap/dist/js/bootstrap.min",
+      "buzz": "vendor/buzz/dist/buzz",
       "config": "config",
       "jquery": "vendor/jquery/dist/jquery.min",
       "jquery_migrate": "vendor/jquery-migrate/jquery-migrate",

@@ -4,9 +4,11 @@ define(
     'backbone',
     'mustache',
     'views/QuestionAnswerContainer/QuestionView',
-    'text!views/QuestionAnswerContainer/mainTemplate.html'
+    'text!views/QuestionAnswerContainer/mainTemplate.html',
+    'buzz',
+    'text!views/QuestionAnswerContainer/audio_filenames.html'
     ], 
-    function(config, Backbone, Mustache, QuestionView, mainTemplate){
+    function(config, Backbone, Mustache, QuestionView, mainTemplate, buzz, audio_filenames){
 
     return Backbone.View.extend({
         initialize: function(){
@@ -22,6 +24,51 @@ define(
             this.delegateEvents()
             // Disable previous_question nav link since we're on question 1
             this.$('.previous_question').css({color:'lightgray'})
+            
+            // Note:  Sounds are from freesound.org
+            // -- Good sounds --
+            // Ding, angels singing, applause, hymns with understandable words, sung with an organ
+            //  Try http://www.freesound.org/search/?q=hymn
+            //      http://gospelriver.com/music/
+            // -- Bad sounds --
+            // Scary dog barking, growling, thunderclap, whispers of judgment, screams of hell
+            // We put all the sounds into an object (to avoid duplicating code)
+            //      and maybe choose a limited set randomly.
+            //  The sound object's template contains filenames created by the following command:
+            //      "find . -type f"
+            // Start here.
+            // TODO:
+            //  Store attribution info in the object so it's at least accessible.
+            //  Some sounds would work better for certain questions.
+            //  Reduce the file size so they don't take forever to download onto a mobile device.
+            var sounds = _.map(audio_filenames.split('\n'), function(name){
+                var filename_parts = name.slice(name.lastIndexOf('/')+1, name.length).split('.')
+                var dir_matches = name.match(/\/(.+)\//)
+                if (dir_matches !== null){
+                    var dir = dir_matches[1]
+                }else{
+                    var dir = ''
+                }
+                return {
+                    dir: dir,
+                    filename: filename_parts[0],
+                    filename_extension: filename_parts[1]
+                }
+            })
+            this.sounds_attributes = {
+                play:function(dir){
+                    if (typeof this.buzz_sound !== 'undefined'){
+                        this.buzz_sound.fadeOut(1000)
+                    }
+                    var dir_sounds = _.where(sounds, {dir:dir})
+                    var sound = dir_sounds[_.random(dir_sounds.length-1)]
+                    this.buzz_sound = new buzz.sound('assets/audio/' + ( sound.dir !== '' ? sound.dir + '/' : '' ) + sound.filename, {
+                        formats: [ sound.filename_extension ]
+                    });
+                    this.buzz_sound.play()
+                },
+                sounds:sounds
+            }
             
             // TODO: Convert to use backbone-hoodie
             // TODO: Bootstrap the questions into the database
@@ -174,7 +221,6 @@ define(
                     ]
                 }
             ])
-            // TODO: Move this setting into the config.
             config.use_new_numbers = false
             if (config.use_new_numbers === false){
                 var question = this.questions.findWhere({original_number:1})
@@ -184,7 +230,10 @@ define(
             question.set('number', 1)
             this.question_view = new QuestionView({
                 el:this.$('.question'),
-                model:question
+                model:question,
+                attributes:{
+                    sounds:this.sounds_attributes
+                }
             })
             this.question_view.render()
         },
@@ -220,11 +269,13 @@ define(
                 question.set('number', number)
                 this.question_view = new QuestionView({
                     el:this.$('.question'),
-                    model:question
+                    model:question,
+                    attributes:{
+                        sounds:this.sounds_attributes
+                    }
                 })
                 this.question_view.render()
             }
-            // TODO: Disable appropriate nav link if at the first or last question
         },
         get_last_number:function(){
             if (config.use_new_numbers === false){
