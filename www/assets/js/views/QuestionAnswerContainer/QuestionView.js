@@ -21,9 +21,10 @@ define(
             this.delegateEvents()
         },
         give_answer:function(event){
-            // TODO: Display scripture answers
+            // Display scripture answers
             this.$('.answer').show()
-            // TODO: Play sound and provide overlay for whether they got it right or not.
+            // Play sound and 
+            // TODO: provide overlay for whether they got it right or not.
             //  E.g., thunder and lightning, or a glow and the sound of angels singing.
             //  A variety of such good and bad sounds/overlays would be fun.
             if (($(event.target).hasClass('true') && this.model.get('answer') === true) ||
