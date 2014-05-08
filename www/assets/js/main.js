@@ -1,3 +1,11 @@
+// TODO:  https://www.nodejitsu.com/forward/#/terms says:
+//  "You must provide legally adequate privacy notice and protection for End Users. 
+//  If End Users provide you with user names, passwords, or other login information
+//  or personal information, you must make the users aware that the information will
+//  be available to your application and to Nodejitsu."
+// TODO: Try running the following after iriscouch replies:
+//  jitsu database create couch hhm
+//  Then follow https://github.com/timblack1/heaven-and-hell-machine
 require.config({
   waitSeconds: 15000,
   paths: {
