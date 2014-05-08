@@ -1,6 +1,6 @@
 {
   "name": "Heaven and Hell Machine",
-  "version": "1.0.16",
+  "version": "0.0.1",
   "type": "app",
   "dependencies": {
     "hoodie-server": "0.9.19",
