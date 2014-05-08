@@ -1,13 +1,14 @@
 <h3>Question {{number}}:</h3>
 <p>{{{text}}}</p>
 <div class="btn-group" data-toggle="buttons">
-  <label class="btn btn-primary">
+  <label class="btn btn-primary true">
     <input type="radio" name="answer" id="true"> True
   </label>
-  <label class="btn btn-primary">
+  <label class="btn btn-primary false">
     <input type="radio" name="answer" id="false"> False
-  </label></div>
-<p>
+  </label>
+</div>
+<p class='answer' style='display:none'>
     {{#scripture}}
         {{{text}}}
         <br />
