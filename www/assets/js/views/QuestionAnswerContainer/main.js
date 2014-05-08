@@ -25,6 +25,11 @@ define(
             // Disable previous_question nav link since we're on question 1
             this.$('.previous_question').css({color:'lightgray'})
             
+            // TODO: Create a new section in this container which reports to the user where they will go:  Heaven or Hell
+            //  and offers help to get there or to avoid going there (ask a local pastor, or link to gospel presentations)
+            //  Create a new section in this container which reports to the user where they will go:  Heaven or Hell
+            //  and offers help to get there or to avoid going there (ask a local pastor, or link to gospel presentations)
+            
             // Note:  Sounds are from freesound.org
             // -- Good sounds --
             // Ding, angels singing, applause, hymns with understandable words, sung with an organ
