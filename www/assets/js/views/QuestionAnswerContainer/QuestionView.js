@@ -10,6 +10,7 @@ define(
     return Backbone.View.extend({
         initialize: function(){
             _.bindAll(this, 'give_answer')
+            this.sounds = this.attributes.sounds
         },
         events:{
             "click .true":  'give_answer',
@@ -30,9 +31,11 @@ define(
             ){
                 // The user got the answer right
                 this.$('.answer').css({'color':'green'})
+                this.sounds.play('good')
             }else{
                 // The user got the answer wrong
                 this.$('.answer').css({'color':'red'})
+                this.sounds.play('bad')
             }
         }
     });
