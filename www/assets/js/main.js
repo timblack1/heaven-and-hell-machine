@@ -143,8 +143,7 @@ require(
                 //          Help
                 //  Score
                 
-                // TODO: Convert this to render the QuestionAnswerContainerView
-                // Start here.
+                // Render the QuestionAnswerContainerView
                 this.question_answer_container_view = new views.QuestionAnswerContainerView({ el: $('.content') })
                 this.question_answer_container_view.render()
 
