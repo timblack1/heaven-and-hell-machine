@@ -276,7 +276,6 @@ define(
                 })
                 this.question_view.render()
             }
-            // TODO: Disable appropriate nav link if at the first or last question
         },
         get_last_number:function(){
             if (config.use_new_numbers === false){
