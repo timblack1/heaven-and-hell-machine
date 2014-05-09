@@ -8,12 +8,15 @@
     <input type="radio" name="answer" id="false"> False
   </label>
 </div>
-<p class='answer' style='display:none'>
-    {{#scripture}}
-        {{{text}}}
-        <br />
-        <em>{{reference}}</em>
-        <br />
-    {{/scripture}}
-</p>
+<div class='answer' style='display:none'>
+    <h3>Answer:</h3>
+    <p>
+        {{#scripture}}
+            {{{text}}}
+            <br />
+            <em>{{reference}}</em>
+            <br />
+        {{/scripture}}
+    </p>
+</div>
 {{help}}

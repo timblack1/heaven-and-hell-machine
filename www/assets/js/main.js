@@ -73,7 +73,7 @@ require(
     'model',
     'views/main',
     'underscore',
-    'backbone',
+    'backbone_couchdb',
     'jquery_couch'
     ], 
     function(

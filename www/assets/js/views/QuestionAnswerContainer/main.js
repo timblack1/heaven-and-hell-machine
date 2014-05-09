@@ -1,14 +1,15 @@
 define(
    [
     'config',
-    'backbone',
+    'backbone_couchdb',
     'mustache',
     'views/QuestionAnswerContainer/QuestionView',
     'text!views/QuestionAnswerContainer/mainTemplate.html',
     'buzz',
-    'text!views/QuestionAnswerContainer/audio_filenames.html'
+    'text!views/QuestionAnswerContainer/audio_filenames.html',
+    'views/QuestionAnswerContainer/StatusView'
     ], 
-    function(config, Backbone, Mustache, QuestionView, mainTemplate, buzz, audio_filenames){
+    function(config, Backbone, Mustache, QuestionView, mainTemplate, buzz, audio_filenames, StatusView){
 
     return Backbone.View.extend({
         initialize: function(){
@@ -25,21 +26,41 @@ define(
             // Disable previous_question nav link since we're on question 1
             this.$('.previous_question').css({color:'lightgray'})
             
-            // TODO: Create a new section in this container which reports to the user where they will go:  Heaven or Hell
-            //  and offers help to get there or to avoid going there (ask a local pastor, or link to gospel presentations)
+            // Create a section in this container which reports to the user where they will go:  Heaven or Hell.
+            // TODO: Offer help to get to heaven or to avoid going to hell (ask a local pastor, 
+            //      or link to gospel presentations).
             //  Create a new section in this container which reports to the user where they will go:  Heaven or Hell
-            //  and offers help to get there or to avoid going there (ask a local pastor, or link to gospel presentations)
+            //  and offers help to get there or to avoid going there (ask a local pastor, or link to gospel presentations).
+            var StatusList = Backbone.RelationalModel.extend({
+                get_status:function(){
+                    if (_.contains(this.get('answers'), 'wrong') || this.get('answers').length == 0){
+                        var status = 'Hell'
+                    }else{
+                        var status = 'Heaven'
+                    }
+                    return status
+                },
+                defaults:{
+                    'answers':[]
+                }
+            })
+            this.status_list = new StatusList()
+            this.status_view = new StatusView({
+                el:this.$('.status'),
+                model:this.status_list
+            })
+            this.status_view.render()
             
             // Note:  Sounds are from freesound.org
             // -- Good sounds --
-            // Ding, angels singing, applause, hymns with understandable words, sung with an organ
+            // Ding, angels singing, applause, hymns with edifying, understandable words (sung with an organ?)
             //  Try http://www.freesound.org/search/?q=hymn
             //      http://gospelriver.com/music/
             // -- Bad sounds --
             // Scary dog barking, growling, thunderclap, whispers of judgment, screams of hell
             // We put all the sounds into an object (to avoid duplicating code)
             //      and maybe choose a limited set randomly.
-            //  The sound object's template contains filenames created by the following command:
+            //  The audio_filenames template contains filenames created by the following command:
             //      "find . -type f"
             // Start here.
             // TODO:
@@ -236,9 +257,8 @@ define(
             this.question_view = new QuestionView({
                 el:this.$('.question'),
                 model:question,
-                attributes:{
-                    sounds:this.sounds_attributes
-                }
+                parent:this,
+                sounds:this.sounds_attributes
             })
             this.question_view.render()
         },
@@ -275,9 +295,8 @@ define(
                 this.question_view = new QuestionView({
                     el:this.$('.question'),
                     model:question,
-                    attributes:{
-                        sounds:this.sounds_attributes
-                    }
+                    parent:this,
+                    sounds:this.sounds_attributes
                 })
                 this.question_view.render()
             }
