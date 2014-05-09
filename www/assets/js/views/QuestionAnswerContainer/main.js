@@ -31,12 +31,15 @@ define(
             //      or link to gospel presentations).
             //  Create a new section in this container which reports to the user where they will go:  Heaven or Hell
             //  and offers help to get there or to avoid going there (ask a local pastor, or link to gospel presentations).
+            var thiz = this
             var StatusList = Backbone.RelationalModel.extend({
                 get_status:function(){
                     if (_.contains(this.get('answers'), 'wrong') || this.get('answers').length == 0){
                         var status = 'Hell'
+                        thiz.$('.status').css({'color':'red'})
                     }else{
                         var status = 'Heaven'
+                        thiz.$('.status').css({'color':'green'})
                     }
                     return status
                 },
