@@ -1,7 +1,7 @@
 define(
    [
     'config',
-    'backbone',
+    'backbone_hoodie',
     'mustache',
     'text!views/QuestionAnswerContainer/Question.html'
     ], 
@@ -58,6 +58,11 @@ define(
             var answers = _.clone(this.parent.status_view.model.get('answers'))
             answers[this.model.get('number')] = settings.answer
             this.parent.status_view.model.set('answers', answers)
+            hoodie = Backbone.hoodie
+            hoodie.store.add('answers', answers)
+            hoodie.store.findAll('answers').done(function(answers){
+                console.log(answers)
+            })
         }
     });
 

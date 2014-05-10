@@ -11,18 +11,18 @@ require.config({
   paths: {
       "async": "vendor/requirejs-plugins/src/async",
       "backbone": "vendor/backbone/backbone",
-      // Note this may import the .coffee instead of the .js file
-      "backbone_couchdb": "backbone-couchdb/backbone-couchdb",
+      "backbone_hoodie": "vendor/backbone-hoodie/src/backbone-hoodie",
       "backbone_relational": "vendor/backbone-relational/backbone-relational",
       "bootstrap": "vendor/bootstrap/dist/js/bootstrap.min",
       "buzz": "vendor/buzz/dist/buzz",
       "config": "config",
+      "hoodie": "vendor/hoodie/dist/hoodie",
       "jquery": "vendor/jquery/dist/jquery.min",
-      "jquery_migrate": "vendor/jquery-migrate/jquery-migrate",
       // Commented out because it uses $.browser, which is deprecated
       // But this may break msie compatibility!
       //"jquery_couch": "/_utils/script/jquery.couch",
       "jquery_couch": "jquery.couch",
+      "jquery_migrate": "vendor/jquery-migrate/jquery-migrate",
       "model": "model",
       "mustache": "vendor/mustache/mustache",
       "text": "vendor/requirejs-text/text",
@@ -36,10 +36,10 @@ require.config({
       backbone_relational: {
           deps: ["backbone"]
       },
-      backbone_couchdb: {
-          deps: ["backbone_relational", "jquery_couch"],
+      backbone_hoodie: {
+          deps: ["backbone_relational", "hoodie"],
           init: function(){
-              // TODO: Handle injecting Backbone.RelationalModel into backbone_couchdb here
+              // TODO: Handle injecting Backbone.RelationalModel into backbone_hoodie here
               // return this.
           },
           exports: 'Backbone'
@@ -55,7 +55,7 @@ require.config({
           deps: ["jquery"]
       },
       model: {
-          deps: ["jquery", "config", "backbone", "backbone_relational", "backbone_couchdb"]
+          deps: ["jquery", "config", "backbone", "backbone_relational", "backbone_hoodie"]
       },
       mustache: {
           exports: ["Mustache"]
@@ -73,7 +73,7 @@ require(
     'model',
     'views/main',
     'underscore',
-    'backbone_couchdb',
+    'backbone_hoodie',
     'jquery_couch'
     ], 
     function(
@@ -88,7 +88,7 @@ require(
                 // Make it easy to reference this object in event handlers
                 //_.bindAll(this, 'find_a_church', 'import_directory')
                 // initialize Hoodie
-                var hoodie  = new Hoodie()
+                hoodie  = new Hoodie()
             },
             // Set up URLs here
             // TODO: Set CouchDB routing for URLs it doesn't understand.  Is there a way to do this

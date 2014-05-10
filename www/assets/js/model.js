@@ -56,29 +56,20 @@
 // Standard AMD RequireJS define
 define([
         'config',
-        'backbone_couchdb'
+        'backbone_hoodie'
         ], function(config, Backbone){
     // Fill this with your database information.
-
-    // `ddoc_name` is the name of your couchapp project.
-    Backbone.couch_connector.config.db_name = config.db_name;
-    Backbone.couch_connector.config.ddoc_name = "rcl";
-    // If set to true, the connector will listen to the changes feed
-    //  and will provide your models with real time remote updates.
-    Backbone.couch_connector.config.global_changes = true;
-    // This setting enables the code/features in this pull request:
-    //  https://github.com/janmonschke/backbone-couchdb/pull/25
-    Backbone.couch_connector.config.single_feed = true;
+    
+    Backbone.connect() // creates a new hoodie at Backbone.hoodie
+    var hoodie = Backbone.hoodie
     // Reload the page when the design doc changes
-    var db = config.db
-    changes = db.changes();
-    changes.onChange(function(data){
+    hoodie.store.on('change', function(eventName, data){
         for (var i=0; i<data.results.length; i++){
             if (data.results[i].id == '_design/rcl'){
                 window.location.reload()
             }
         }
-    }) 
+    })
     
     // Define base classes
     

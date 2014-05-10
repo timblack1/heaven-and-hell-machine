@@ -24,7 +24,6 @@
     "bootstrap": "~3.1.1",
     "backbone-relational": "~0.8.8",
     "mustache": "~0.8.1",
-    "backbone-couchdb": "*",
     "requirejs-plugins": "~1.0.2",
     "requirejs-text": "~2.0.12",
     "jquery-migrate": "~1.2.1",

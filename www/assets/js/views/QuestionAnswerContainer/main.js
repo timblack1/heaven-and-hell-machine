@@ -1,7 +1,7 @@
 define(
    [
     'config',
-    'backbone_couchdb',
+    'backbone_hoodie',
     'mustache',
     'views/QuestionAnswerContainer/QuestionView',
     'text!views/QuestionAnswerContainer/mainTemplate.html',
