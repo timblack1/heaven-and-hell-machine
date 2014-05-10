@@ -16,7 +16,8 @@ require.config({
       "bootstrap": "vendor/bootstrap/dist/js/bootstrap.min",
       "buzz": "vendor/buzz/dist/buzz",
       "config": "config",
-      "hoodie": "vendor/hoodie/dist/hoodie",
+      //"hoodie": "vendor/hoodie/dist/hoodie",
+      "hoodie": "/_api/_files/hoodie", // needs to be made available here for backbone-hoodie to require
       "jquery": "vendor/jquery/dist/jquery.min",
       // Commented out because it uses $.browser, which is deprecated
       // But this may break msie compatibility!
@@ -37,7 +38,7 @@ require.config({
           deps: ["backbone"]
       },
       backbone_hoodie: {
-          deps: ["backbone_relational", "hoodie"],
+          deps: ["backbone_relational"],
           init: function(){
               // TODO: Handle injecting Backbone.RelationalModel into backbone_hoodie here
               // return this.
@@ -48,6 +49,9 @@ require.config({
       "bootstrap": {
           deps: ["jquery"]
       },
+      "bootstrap_modalform":{
+          deps: ["bootstrap"]
+      },
       jquery_couch: {
           deps: ["jquery", "jquery_migrate"]
       },
@@ -55,7 +59,7 @@ require.config({
           deps: ["jquery"]
       },
       model: {
-          deps: ["jquery", "config", "backbone", "backbone_relational", "backbone_hoodie"]
+          deps: ["jquery", "config", "backbone_hoodie"]
       },
       mustache: {
           exports: ["Mustache"]
@@ -87,8 +91,8 @@ require(
             initialize : function(){
                 // Make it easy to reference this object in event handlers
                 //_.bindAll(this, 'find_a_church', 'import_directory')
-                // initialize Hoodie
-                hoodie  = new Hoodie()
+                // This is needed to get hoodie.accountbar.bootstrap.js to work.
+                hoodie = new Hoodie()
             },
             // Set up URLs here
             // TODO: Set CouchDB routing for URLs it doesn't understand.  Is there a way to do this
@@ -113,45 +117,23 @@ require(
 //                 this.default_view = this[config.default_view]
 //                 this.default_view.render()
                 
-                // Example code from Hoodie's app template:
-                // ----------------------------------------
-                // // initial load of all todo items from the store
-                // hoodie.store.findAll('todo').then( function(todos) {
-                //   todos.sort( sortByCreatedAt ).forEach( addTodo )
-                // })
-
-                // // when a new todo gets stored, add it to the UI
-                // hoodie.store.on('add:todo', addTodo)
-                // // clear todo list when the get wiped from store
-                // hoodie.account.on('signout', clearTodos)
-
-                // // handle creating a new task
-                // $('#todoinput').on('keypress', function(event) {
-                //   if (event.keyCode == 13) { // ENTER
-                //     hoodie.store.add('todo', {title: event.target.value});
-                //     event.target.value = '';
-                //   }
-                // })
-
-                // TODO: Outline main collection types
-                // TODO: Outline main templates
+                // TODO: Outline structure of main views & templates
                 //  QuestionAnswerContainer
+                //      Nav
                 //      Question
-                //          Nav
                 //          Number
                 //          Text
-                //          Help
-                //      AnswerList
-                //          Answer
-                //              Checkbox
-                //              Letter
-                //              Text
-                //          Help
-                //      Scripture
-                //          Text
-                //          Help
+                //      Answer
+                //          Heading
+                //          AnswerList
+                //              Scripture
+                //                  Text
+                //                  Reference
                 //  Score
-                
+                //      You are going to: destination
+                //      Help
+                //          Ask a local pastor
+
                 // Render the QuestionAnswerContainerView
                 this.question_answer_container_view = new views.QuestionAnswerContainerView({ el: $('.content') })
                 this.question_answer_container_view.render()

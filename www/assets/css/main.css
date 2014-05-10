@@ -53,3 +53,6 @@ html[data-hoodie-account-status=signedout] .hoodie-account-signedout {
 .copy p {
   margin: 0;
 }
+.score_container {
+    text-align: center;
+}

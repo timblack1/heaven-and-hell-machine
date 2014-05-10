@@ -1,15 +1,16 @@
 define(
    [
     'config',
+    'model',
     'backbone_hoodie',
     'mustache',
     'views/QuestionAnswerContainer/QuestionView',
     'text!views/QuestionAnswerContainer/mainTemplate.html',
     'buzz',
     'text!views/QuestionAnswerContainer/audio_filenames.html',
-    'views/QuestionAnswerContainer/StatusView'
+    'views/QuestionAnswerContainer/ScoreView'
     ], 
-    function(config, Backbone, Mustache, QuestionView, mainTemplate, buzz, audio_filenames, StatusView){
+    function(config, model, Backbone, Mustache, QuestionView, mainTemplate, buzz, audio_filenames, ScoreView){
 
     return Backbone.View.extend({
         initialize: function(){
@@ -31,28 +32,13 @@ define(
             //      or link to gospel presentations).
             //  Create a new section in this container which reports to the user where they will go:  Heaven or Hell
             //  and offers help to get there or to avoid going there (ask a local pastor, or link to gospel presentations).
-            var thiz = this
-            var StatusList = Backbone.RelationalModel.extend({
-                get_status:function(){
-                    if (_.contains(this.get('answers'), 'wrong') || this.get('answers').length == 0){
-                        var status = 'Hell'
-                        thiz.$('.status').css({'color':'red'})
-                    }else{
-                        var status = 'Heaven'
-                        thiz.$('.status').css({'color':'green'})
-                    }
-                    return status
-                },
-                defaults:{
-                    'answers':[]
-                }
+            var thiz = this;
+            this.score = new model.Score()
+            this.score_view = new ScoreView({
+                el:this.$('.score'),
+                model:this.score
             })
-            this.status_list = new StatusList()
-            this.status_view = new StatusView({
-                el:this.$('.status'),
-                model:this.status_list
-            })
-            this.status_view.render()
+            this.score_view.render()
             
             // Note:  Sounds are from freesound.org
             // -- Good sounds --
@@ -99,7 +85,6 @@ define(
                 sounds:sounds
             }
             
-            // TODO: Convert to use backbone-hoodie
             // TODO: Bootstrap the questions into the database
             // TODO: Load the questions into a collection
             // TODO: Create two orders of questions as listed below:
@@ -107,11 +92,7 @@ define(
             //  new:    4,2b,3,2,1,7,6,8
             // TODO: Do this for the first question in the questions collection
             // TODO: Make a list that contains more than one scripture and reference per question
-            var Question = Backbone.RelationalModel.extend({})
-            var Questions = Backbone.Collection.extend({
-                model:Question
-            })
-            this.questions = new Questions;
+            this.questions = new model.Questions;
             this.questions.add([
                 {
                     original_number:1,

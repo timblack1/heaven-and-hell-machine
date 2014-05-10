@@ -55,9 +55,9 @@ define(
             //  A variety of such good and bad sounds/overlays would be fun.
             this.$('.answer p').css({'color':settings.color})
             this.sounds.play(settings.dir)
-            var answers = _.clone(this.parent.status_view.model.get('answers'))
+            var answers = _.clone(this.parent.score_view.model.get('answers'))
             answers[this.model.get('number')] = settings.answer
-            this.parent.status_view.model.set('answers', answers)
+            this.parent.score_view.model.set('answers', answers)
             hoodie = Backbone.hoodie
             hoodie.store.add('answers', answers)
             hoodie.store.findAll('answers').done(function(answers){
