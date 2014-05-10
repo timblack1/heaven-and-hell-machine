@@ -16,12 +16,12 @@ require.config({
       "bootstrap": "vendor/bootstrap/dist/js/bootstrap.min",
       "buzz": "vendor/buzz/dist/buzz",
       "config": "config",
-      //"hoodie": "vendor/hoodie/dist/hoodie",
       "hoodie": "/_api/_files/hoodie", // needs to be made available here for backbone-hoodie to require
       "jquery": "vendor/jquery/dist/jquery.min",
       // Commented out because it uses $.browser, which is deprecated
       // But this may break msie compatibility!
       //"jquery_couch": "/_utils/script/jquery.couch",
+      // TODO:  Is this still needed?
       "jquery_couch": "jquery.couch",
       "jquery_migrate": "vendor/jquery-migrate/jquery-migrate",
       "model": "model",
@@ -121,18 +121,22 @@ require(
                 //  QuestionAnswerContainer
                 //      Nav
                 //      Question
-                //          Number
+                //          Heading: Number
                 //          Text
-                //      Answer
-                //          Heading
-                //          AnswerList
-                //              Scripture
-                //                  Text
-                //                  Reference
+                //          Buttons
+                //          Answer
+                //              Heading
+                //              AnswerList
+                //                  Scripture
+                //                      Text
+                //                      Reference
                 //  Score
                 //      You are going to: destination
                 //      Help
+                //          What must I do to be saved?
                 //          Ask a local pastor
+                //          I want to join a biblical church!
+                //          Find a local church.
 
                 // Render the QuestionAnswerContainerView
                 this.question_answer_container_view = new views.QuestionAnswerContainerView({ el: $('.content') })

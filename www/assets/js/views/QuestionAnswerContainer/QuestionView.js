@@ -29,12 +29,14 @@ define(
                 right:{
                     color:'green',
                     dir:'good',
-                    answer:'right'
+                    answer:'right',
+                    correct:'Correct'
                 },
                 wrong:{
                     color:'red',
                     dir:'bad',
-                    answer:'wrong'
+                    answer:'wrong',
+                    correct:'Incorrect'
                 }
             }
             if (($(event.target).hasClass('true') && this.model.get('answer') === true) ||
@@ -55,10 +57,13 @@ define(
             //  A variety of such good and bad sounds/overlays would be fun.
             this.$('.answer p').css({'color':settings.color})
             this.sounds.play(settings.dir)
+            this.$('.correct').text(settings.correct)
             var answers = _.clone(this.parent.score_view.model.get('answers'))
             answers[this.model.get('number')] = settings.answer
             this.parent.score_view.model.set('answers', answers)
             hoodie = Backbone.hoodie
+            // TODO: Save the answers in a correct format, so they all get saved in one model, rather than in many.
+            // Start here.
             hoodie.store.add('answers', answers)
             hoodie.store.findAll('answers').done(function(answers){
                 console.log(answers)

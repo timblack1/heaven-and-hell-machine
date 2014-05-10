@@ -40,6 +40,70 @@ define(
             })
             this.score_view.render()
             
+            // TODO: Get the following images for backgrounds:
+            /*
+            Both heaven and hell:
+            http://en.wikipedia.org/wiki/File:Broad_and_Narrow_Road.jpg
+            http://en.wikipedia.org/wiki/File:Der_breite_und_der_schmale_Weg_2008.jpg
+            http://www.pinterest.com/pin/37225134393392960/
+            http://en.wikipedia.org/wiki/File:The_Ladder_of_Divine_Ascent.jpg
+            http://en.wikipedia.org/wiki/File:Vank_Cathedral_-_Heaven-Earth-Hell_fresco.jpg
+            Heaven:
+            https://www.flickr.com/photos/torley/1589654736/
+            http://commons.wikimedia.org/wiki/File:We'll_Meet_in_the_Heaven.jpg
+            http://en.wikipedia.org/wiki/File:Paradiso_Canto_31.jpg
+            http://commons.wikimedia.org/wiki/File:St._Benedict's_triumphal_ascent_to_heaven_by_Johann_Michael_Rottmayr_-_Melk_Abbey_Austria.jpg
+            http://commons.wikimedia.org/wiki/File:White_Heaven_Beach_coast_IMG_2862.JPG
+            http://commons.wikimedia.org/wiki/File:Stairway_to_heaven_(156690123).jpg
+            http://www.geograph.org.uk/photo/3467510
+            http://pixabay.com/en/heaven-clouds-cloud-sky-horizon-2327/
+            http://pixabay.com/en/sunset-sky-red-heaven-at-dusk-85359/
+            http://pixabay.com/en/sky-cloud-blue-heaven-heavenly-314475/
+            https://www.flickr.com/photos/waitingfortheword/5852336158/
+            https://www.flickr.com/photos/waitingfortheword/5852336142/in/photostream/
+            https://www.flickr.com/photos/waitingfortheword/5852336166/in/photostream/
+            https://www.flickr.com/photos/waitingfortheword/5732559941/in/set-72157626748025432/
+            https://www.flickr.com/photos/waitingfortheword/5732559953/in/set-72157626748025432/
+            http://pixabay.com/en/heaven-heavenly-ambiance-clouds-22116/
+            http://www.flickr.com/photos/seriykotik/6621135403/
+            https://www.flickr.com/photos/neychurluvr/3305754907/
+            Hell:
+            http://en.wikipedia.org/wiki/File:Paradise_Lost_10.jpg
+            http://en.wikipedia.org/wiki/File:MedinaPL3.jpg
+            http://en.wikipedia.org/wiki/File:Sin-Death-and-the-Devil-Gillray.jpeg
+            http://en.wikipedia.org/wiki/File:GustaveDoreParadiseLostSatanProfile.jpg
+            http://en.wikipedia.org/wiki/File:Milton_paradise.jpg
+            http://commons.wikimedia.org/wiki/File:Paradise_Lost_5.jpg
+            http://commons.wikimedia.org/wiki/File:Henry_Fuseli_-_The_Peasant's_Dream,_Paradise_Lost,_Book_1,_781-8_-_Google_Art_Project.jpg
+            http://commons.wikimedia.org/wiki/File:Bartolomeo_Di_Fruosino_-_Inferno,_from_the_Divine_Comedy_by_Dante_(Folio_1v)_-_WGA01339.jpg
+            http://commons.wikimedia.org/wiki/File:Stradano_Inferno_Canto_09.jpg
+            http://www.fotopedia.com/items/flickr-9615891552
+            http://commons.wikimedia.org/wiki/File:Jheronimus_Bosch_Hell_(detail).jpg
+            http://en.wikipedia.org/wiki/File:Darvasa_gas_crater_panorama.jpg
+            http://en.wikipedia.org/wiki/File:The_Door_to_Hell.jpg
+            http://en.wikipedia.org/wiki/File:Hortus_Deliciarum_-_Hell.jpg
+            http://en.wikipedia.org/wiki/File:Hell-fresco-from-Raduil.jpg
+            http://en.wikipedia.org/wiki/File:Hel_(1889)_by_Johannes_Gehrts.jpg
+            http://en.wikipedia.org/wiki/File:Dore_woodcut_Divine_Comedy_01.jpg
+            http://en.wikipedia.org/wiki/File:Folio_108r_-_Hell.jpg
+            http://en.wikipedia.org/wiki/File:Church_of_Debra_Berhan_Selassie_-_Paintings_05.jpg
+            http://en.wikipedia.org/wiki/File:Brooklyn_Museum_-_The_Bad_Rich_Man_in_Hell_(Le_mauvais_riche_dans_l%27Enfer)_-_James_Tissot_-_overall.jpg
+            http://en.wikipedia.org/wiki/File:Fra_Angelico_010.jpg
+            http://en.wikipedia.org/wiki/File:William-Adolphe_Bouguereau_(1825-1905)_-_Dante_And_Virgil_In_Hell_(1850).jpg
+            http://en.wikipedia.org/wiki/File:019Visita_al_infierno.jpg
+            http://commons.wikimedia.org/wiki/File:Hell_LavaPit.JPG
+            http://commons.wikimedia.org/wiki/File:Harrowing_of_Hell_Medium_Res.jpg
+            http://commons.wikimedia.org/wiki/File:Bosch_painting_of_Hell_(582x800).jpg
+            http://valerianastock.deviantart.com/art/Gates-of-Hell-Texture-199047602
+            http://mechanicalmichael.deviantart.com/art/The-stairway-to-hell-84001007?q=gallery%3AMechanicalMichael%2F9634204&qo=5
+            http://www.fotopedia.com/items/flickr-8031717781
+            http://pixabay.com/en/fire-burn-hell-warm-heat-flame-298105/
+            http://pixabay.com/en/fire-wood-fire-flame-burn-brand-171229/
+            http://pixabay.com/en/fire-flame-burn-chair-wood-fire-175966/
+            http://pixabay.com/en/fire-the-flames-wood-burning-184885/
+            https://www.flickr.com/photos/rapidtravelchai/8031716278/
+            */
+            
             // Note:  Sounds are from freesound.org
             // -- Good sounds --
             // Ding, angels singing, applause, hymns with edifying, understandable words (sung with an organ?)
@@ -56,6 +120,7 @@ define(
             //  Store attribution info in the object so it's at least accessible.
             //  Some sounds would work better for certain questions.
             //  Reduce the file size so they don't take forever to download onto a mobile device.
+            // Convert sounds that are in file formats which won't play
             var sounds = _.map(audio_filenames.split('\n'), function(name){
                 var filename_parts = name.slice(name.lastIndexOf('/')+1, name.length).split('.')
                 var dir_matches = name.match(/\/(.+)\//)
