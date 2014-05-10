@@ -9,14 +9,11 @@
   </label>
 </div>
 <div class='answer' style='display:none'>
-    <h3>In the Bible, God says,</h3>
-    <p>
+    <h3><span class='correct'></span>! In the Bible, God says,</h3>
+    <div>
         {{#scripture}}
-            {{{text}}}
-            <br />
-            <em>{{reference}}</em>
-            <br />
+            <p>{{{text}}}</p>
+            <p class='reference'>- {{reference}}</p>
         {{/scripture}}
-    </p>
+    </div>
 </div>
-{{help}}

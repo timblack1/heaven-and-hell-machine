@@ -3,7 +3,8 @@
    ========================================================================== */
 
 body {
-  background: url('../img/pattern_130.gif');
+    background: url('../img/pattern_130.gif');
+/*     background: black; */
 }
 
 .container {
@@ -11,7 +12,16 @@ body {
   background: #fff;
   margin-top: -10px;
   box-shadow: 0 0 10px rgba(0,0,0,.5);
-}
+  color: white;
+  /* transparent background, from http://hammerspace.co.uk/2011/10/cross-browser-alpha-transparent-background-css */
+    background:rgb(170,170,170);
+	background: transparent\9;
+	background:rgba(170,170,170,0.6);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99aaaaaa,endColorstr=#99aaaaaa);
+	zoom: 1;
+.container:nth-child(n) {
+	filter: none;
+}}
 
 
 /* hide contents until we know if user is signed in or not */
@@ -30,7 +40,8 @@ html[data-hoodie-account-status=signedout] .hoodie-account-signedout {
 .hoodie-accountbar {
   position: absolute;
   top: 20px;
-  right: 10px;
+  right: 6%;
+  float:right;
 }
 
 .content {
@@ -49,10 +60,43 @@ html[data-hoodie-account-status=signedout] .hoodie-account-signedout {
   background: #EBE7DA;
   margin: 0;
   /* border-radius: 0; */
+    /* transparent background */
+    background:rgb(68,68,68);
+	background: transparent\9;
+	background:rgba(68,68,68,0.6);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99444444,endColorstr=#99444444);
+	zoom: 1;
+}
+.jumbotron:nth-child(n), .copy:nth-child(n) {
+	filter: none;
 }
 .copy p {
   margin: 0;
 }
-.score_container {
+.score {
     text-align: center;
+}
+.subtitle {
+    position:relative;
+    top:.5em
+}
+.broad-narrow {
+    border: .5em solid gray;
+    border-radius: 1em;
+    padding: .5em;
+    position:relative;
+    top:-.5em
+}
+.answer, .score {
+    color:lightgray;
+    border-radius:1em;
+    padding:1em;
+    margin-top:1em;
+    background:white;
+}
+.answer h3 {
+    margin-top: 0.3em;
+}
+.question_nav, .copy {
+  text-shadow:0.4px 0.4px white;
 }
