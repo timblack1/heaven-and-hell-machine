@@ -1,10 +1,19 @@
-/* ==========================================================================
-   Hoodie Sign In / Sign Up / Sign out stylings
-   ========================================================================== */
-
-body {
-    background: url('../img/pattern_130.gif');
-/*     background: black; */
+html, body {
+/*     background: url('../img/pattern_130.gif'); */
+    background: #000;
+    height: 100%;
+    margin: 0;
+}
+/* allow background images to be faded in */
+.background {
+    min-height: 100%;
+    content:"";
+    opacity:1;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    position:absolute;
 }
 
 .container {
@@ -23,6 +32,10 @@ body {
 	filter: none;
 }}
 
+
+/* ==========================================================================
+   Hoodie Sign In / Sign Up / Sign out stylings
+   ========================================================================== */
 
 /* hide contents until we know if user is signed in or not */
 body .hoodie-account-signedin,
@@ -99,4 +112,5 @@ html[data-hoodie-account-status=signedout] .hoodie-account-signedout {
 }
 .question_nav, .copy {
   text-shadow:0.4px 0.4px white;
+}ow:0.4px 0.4px white;
 }

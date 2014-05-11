@@ -3,13 +3,14 @@ define(
     'config',
     'backbone_hoodie',
     'mustache',
+    'model',
     'text!views/QuestionAnswerContainer/Score.html'
     ], 
-    function(config, Backbone, Mustache, template){
+    function(config, Backbone, Mustache, model, template){
 
     return Backbone.View.extend({
         initialize: function(){
-            _.bindAll(this, 'rerender', 'color_score')
+            _.bindAll(this, 'rerender', 'color_score', 'fadein_background')
             this.listenTo(this.model, 'change:answers', this.rerender)
         },
         render: function(){
@@ -65,11 +66,20 @@ define(
                 this.$el.css({'color':'red'})
                 this.$('.join_church_container').addClass('hidden')
                 this.$('.ask_pastor_container').fadeIn(1000).removeClass('hidden')
+                this.fadein_background(model.hell)
             }else if (destination == 'Heaven'){
                 this.$el.css({'color':'green'})
                 this.$('.ask_pastor_container').addClass('hidden')
                 this.$('.join_church_container').fadeIn(1000).removeClass('hidden')
+                this.fadein_background(model.heaven)
             }
+        },
+        fadein_background:function(urls){
+            // Fade to a new background image
+            $('.background').css({
+                'background':" #000 url(" + urls[_.random(urls.length-1)] + ") no-repeat center center fixed",
+                'background-size':'cover'
+            }).animate({ opacity: 1 }, { duration: 3000 });
         }
     });
 });

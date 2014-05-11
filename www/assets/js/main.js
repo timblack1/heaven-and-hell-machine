@@ -137,7 +137,15 @@ require(
                 //          Ask a local pastor
                 //          I want to join a biblical church!
                 //          Find a local church.
-
+                
+                // Render the background image
+                $('.background').css('opacity','0').css({
+                    'background':" #000 url(" + model.heaven_and_hell[_.random(model.heaven_and_hell.length-1)] + ") no-repeat center center fixed",
+                    'background-size':'cover'
+                }).animate({ opacity: 1 }, { duration: 1000 });
+                
+                // TODO: Make footer stick to the bottom of the page.
+                
                 // Render the QuestionAnswerContainerView
                 this.question_answer_container_view = new views.QuestionAnswerContainerView({ el: $('.content') })
                 this.question_answer_container_view.render()
