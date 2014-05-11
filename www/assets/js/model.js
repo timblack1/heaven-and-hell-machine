@@ -206,6 +206,7 @@ define([
 
     modelStore.Score = Backbone.RelationalModel.extend({
         type:'score',
+        collection:'Scores',
         defaults:{
             'answers':[],
             'destination':''
@@ -221,6 +222,11 @@ define([
             return destination
         }
     })
+    modelStore.Scores = Backbone.Collection.extend({
+        model:modelStore.Score,
+        url:'/score'
+    })
+
 
     return modelStore
 })
