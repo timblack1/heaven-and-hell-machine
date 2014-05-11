@@ -34,7 +34,9 @@ define(
             //  Create a new section in this container which reports to the user where they will go:  Heaven or Hell
             //  and offers help to get there or to avoid going there (ask a local pastor, or link to gospel presentations).
             var thiz = this;
-            this.score = new model.Score()
+            this.score = new model.Score.findOrCreate({
+                collection:'Scores'
+            })
             this.score_view = new ScoreView({
                 el:this.$('.score'),
                 model:this.score
