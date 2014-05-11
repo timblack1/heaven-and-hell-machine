@@ -76,10 +76,24 @@ define(
         },
         fadein_background:function(urls){
             // Fade to a new background image
-            $('.background').css({
-                'background':" #000 url(" + urls[_.random(urls.length-1)] + ") no-repeat center center fixed",
-                'background-size':'cover'
-            }).animate({ opacity: 1 }, { duration: 3000 });
+            // Create new div with new background-image inside .background and fade it in
+            var new_url = urls[_.random(urls.length-1)]
+            var $div = $('<div class="background" style="background: #000 url(\'' + new_url + '\') no-repeat center center fixed; display:none;"></div>')
+            $('.background').append($div)
+            $div.fadeIn({
+                duration:3000,
+                queue:false,
+                complete:function(){
+                    // Set new background-image on .background
+                    $('.background').css({
+                        'background':" #000 url('" + new_url + "') no-repeat center center fixed",
+                        'background-size':'cover'
+                    })
+                    // Remove new div since it's not needed anymore
+                    $('.background div').remove()
+                }
+            })
         }
     });
 });
+;
