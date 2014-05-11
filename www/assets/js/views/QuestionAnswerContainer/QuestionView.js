@@ -60,15 +60,12 @@ define(
             this.$('.correct').text(settings.correct)
             var answers = _.clone(this.parent.score_view.model.get('answers'))
             answers[this.model.get('number')] = settings.answer
-            this.parent.score_view.model.set('answers', answers)
-            hoodie = Backbone.hoodie
             // TODO: Save the answers in a correct format, so they all get saved in one model, rather than in many.
             // Start here.
-            hoodie.store.add('answers', answers)
-            hoodie.store.findAll('answers').done(function(answers){
-                console.log(answers)
-            })
+            this.parent.score_view.model.set('answers', answers)
+            console.log(score.attributes.answers)
         }
     });
 
 });
+

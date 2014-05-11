@@ -78,7 +78,8 @@ define(
             // Fade to a new background image
             // Create new div with new background-image inside .background and fade it in
             var new_url = urls[_.random(urls.length-1)]
-            var $div = $('<div class="background" style="background: #000 url(\'' + new_url + '\') no-repeat center center fixed; display:none;"></div>')
+            var $div = $('<div class="background" style="background: #000 url(\'' + new_url + 
+                '\') no-repeat center center fixed; display:none; background-size:cover"></div>')
             $('.background').append($div)
             $div.fadeIn({
                 duration:3000,
