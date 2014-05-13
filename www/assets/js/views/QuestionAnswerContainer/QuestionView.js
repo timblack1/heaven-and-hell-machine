@@ -58,12 +58,18 @@ define(
             this.$('.answer p').css({'color':settings.color})
             this.sounds.play(settings.dir)
             this.$('.correct').text(settings.correct)
-            var answers = _.clone(this.parent.score_view.model.get('answers'))
+            var mod = this.parent.score_view.model
+            var answers = _.clone(mod.get('answers'))
             answers[this.model.get('number')] = settings.answer
             // TODO: Save the answers in a correct format, so they all get saved in one model, rather than in many.
             // Start here.
-            this.parent.score_view.model.set('answers', answers)
-            console.log(score.attributes.answers)
+            mod.set({'answers':answers})
+            mod.save()
+            // https://github.com/carltongibson/backbone-hoodie/commit/eba20e57c6b00e136dfcf04573902c6557ce82aa
+            //  says fetch() is needed here to populate the collection with the new model.
+            this.parent.scores.fetch()
+            console.log(answers)
+            console.log(mod.get('answers'))
         }
     });
 
