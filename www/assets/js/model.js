@@ -49,6 +49,14 @@ define([
     modelStore.hell = sections[1].replace(regex, '').split('\n')
     var hh = sections[0].split('Heaven:')
     modelStore.heaven = hh[1].replace(regex, '').split('\n')
+    // This is necessary because pixabay doesn't permit hotlinking.
+    modelStore.heaven = _.map(modelStore.heaven, function(item){
+        if (item.indexOf('http') !== 0){
+            return 'assets/img/heaven/' + item
+        }else{
+            return item
+        }
+    })
     modelStore.heaven_and_hell = hh[0].replace('Both heaven and hell:\n','').replace(regex, '').split('\n')
 
     modelStore.Question = Backbone.RelationalModel.extend({
