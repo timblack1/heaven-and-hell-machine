@@ -80,7 +80,8 @@ define(
             }
             var body = "<p>Dear pastor,</p>"
             body += "<p>I answered the following questions in the Heaven and Hell Machine at "
-            body += "<a href='" + window.location.toString() + "'>" + window.location.toString() + "</a>"
+            var url = window.location.toString()
+            body += "<a href='" + url + "'>" + url + "</a>"
             body += " and got some of them wrong."
             body += " My answers are below. What must I do to be saved?</p>\n\n"
             body += "<p>Sincerely,</p>\n\n"
