@@ -94,6 +94,7 @@ define(
             }
             // TODO: This is only rendering for the first question, even when I answer 
             //  the second question wrong.
+            //  The cause appears to be due to not finding the right score model in the other file.
             _.each(this.questions, function(q){
                 var grade = thiz.model.get('answers')[q.get([num_type])]
                 if ((grade == 'right' && q.get('answer') == true) ||
@@ -113,8 +114,13 @@ define(
             var to = 'pastor@caneyopc.org'
             var subject = 'What must I do to be saved?'
             // Compile email here
+            // TODO: Find the best way to edit and send the email.
+            //  I'd like to use Hoodie's email, but can't get it to work.
+            //  Do I need to resort to posting to a PHP script?
             //this.$('.score ask_pastor_container').on('click', window.location = 'mailto:' + to + '?subject=' + subject + '&body=' + body)
             this.$('.ask_pastor_container').on('click', function(){
+                // TODO: Move the email_body div into a modal window or new page, and let the user edit it there.
+                //  So integrate a lightweight WYSIWYG editor.
                 thiz.$('.email_body').html(body)
                 thiz.$('.email_body').removeClass('hidden').show()
             })
