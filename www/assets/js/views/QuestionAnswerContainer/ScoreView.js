@@ -4,9 +4,10 @@ define(
     'backbone_hoodie',
     'mustache',
     'model',
-    'text!views/QuestionAnswerContainer/Score.html'
+    'text!views/QuestionAnswerContainer/Score.html',
+    'text!views/QuestionAnswerContainer/EmailQuestionAnswer.html'
     ], 
-    function(config, Backbone, Mustache, model, template){
+    function(config, Backbone, Mustache, model, template, EmailQuestionAnswer){
 
     return Backbone.View.extend({
         initialize: function(){
@@ -60,6 +61,62 @@ define(
             }else{
                 this.$('.why').addClass('hidden')
             }
+            
+            // TODO: Make the button send an email to a local pastor
+            // TODO: Make different forms of the email for the two main cases:
+            //  - I want to join a biblical church.
+            //  - What must I do to be saved?
+            this.answers = this.model.get('answers')
+            this.all_questions = model.questions
+            if (config.use_new_numbers === false){
+                this.questions = this.all_questions.filter(function(q){
+                    return typeof q.get('original_number') !== 'undefined'
+                })
+            }else{
+                this.questions = this.all_questions.filter(function(q){
+                    return typeof q.get('new_number') !== 'undefined'
+                })
+            }
+            var body = "<p>Dear pastor,</p>"
+            body += "<p>I answered the following questions in the Heaven and Hell Machine at "
+            body += window.location.toString()
+            body += " and got some of them wrong."
+            body += " My answers are below. What must I do to be saved?</p>\n\n"
+            body += "<p>Sincerely,</p>\n\n"
+            body += "<p>[Enter your name here]</p>\n\n"
+            body += "<hr />"
+            // TODO: Convert answers from an array to an object, and put my_answer into answers
+            if (config.use_new_numbers === false){
+                var num_type = 'original_number'
+            }else{
+                var num_type = 'new_number'
+            }
+            _.each(this.questions, function(q){
+                var grade = thiz.model.get('answers')[q[num_type]]
+                if ((grade == 'right' && q.get('answer') == true) ||
+                    (grade == 'wrong' && q.get('answer') == false)){
+                    var my_answer = 'true'
+                }else{
+                    var my_answer = 'false'
+                }
+                body += Mustache.render(EmailQuestionAnswer, {
+                    number:q.get('number'),
+                    text:q.get('text'),
+                    my_answer:my_answer,
+                    grade:grade,
+                    scripture:q.get('scripture')
+                })
+            })
+            var to = 'pastor@caneyopc.org'
+            var subject = 'What must I do to be saved?'
+            // Compile email here
+            //this.$('.score ask_pastor_container').on('click', window.location = 'mailto:' + to + '?subject=' + subject + '&body=' + body)
+            this.$('.score .ask_pastor_container').on('click', function(){
+                debugger;
+                thiz.$('.email_body').html(body)
+                thiz.$('.email_body').removeClass('hidden').show()
+            })
+            debugger;
         },
         color_score:function(destination){
             if (destination == 'Hell'){
