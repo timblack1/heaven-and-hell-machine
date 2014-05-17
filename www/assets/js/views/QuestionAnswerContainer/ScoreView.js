@@ -92,9 +92,10 @@ define(
             }else{
                 var num_type = 'new_number'
             }
+            // TODO: This is only rendering for the first question, even when I answer 
+            //  the second question wrong.
             _.each(this.questions, function(q){
-                debugger;
-                var grade = thiz.model.get('answers')[q[num_type]]
+                var grade = thiz.model.get('answers')[q.get([num_type])]
                 if ((grade == 'right' && q.get('answer') == true) ||
                     (grade == 'wrong' && q.get('answer') == false)){
                     var my_answer = 'true'
@@ -102,7 +103,7 @@ define(
                     var my_answer = 'false'
                 }
                 body += Mustache.render(EmailQuestionAnswer, {
-                    number:q.get('number'),
+                    number:q.get(num_type),
                     text:q.get('text'),
                     my_answer:my_answer,
                     grade:grade,
