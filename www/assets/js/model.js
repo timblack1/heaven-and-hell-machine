@@ -47,6 +47,14 @@ define([
     var sections = image_filenames.split('Hell:')
     var regex = /(^\n+|\n+$)/g
     modelStore.hell = sections[1].replace(regex, '').split('\n')
+    // This is necessary because pixabay doesn't permit hotlinking.
+    modelStore.hell = _.map(modelStore.hell, function(item){
+        if (item.indexOf('http') !== 0){
+            return 'assets/img/hell/' + item
+        }else{
+            return item
+        }
+    })
     var hh = sections[0].split('Heaven:')
     modelStore.heaven = hh[1].replace(regex, '').split('\n')
     // This is necessary because pixabay doesn't permit hotlinking.
