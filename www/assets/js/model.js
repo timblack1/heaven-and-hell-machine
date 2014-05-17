@@ -10,13 +10,13 @@ define([
     var hoodie = Backbone.hoodie
     // Reload the page when the design doc changes
     // TODO: This doesn't work with Hoodie, since there isn't a design doc in the database.
-    hoodie.store.on('change', function(eventName, data){
-        for (var i=0; i<data.results.length; i++){
-            if (data.results[i].id == '_design/rcl'){
-                window.location.reload()
-            }
-        }
-    })
+//     hoodie.store.on('change', function(eventName, data){
+//         for (var i=0; i<data.results.length; i++){
+//             if (data.results[i].id == '_design/rcl'){
+//                 window.location.reload()
+//             }
+//         }
+//     })
     // Provide a model scope for backbone-relational to use to relate models
     modelStore = {}
     Backbone.Relational.store.addModelScope(modelStore)
