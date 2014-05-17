@@ -63,11 +63,12 @@ define(
             }
             
             // TODO: Make the button send an email to a local pastor
+            // TODO: Consider offering a phone number to call too.
             // TODO: Make different forms of the email for the two main cases:
             //  - I want to join a biblical church.
             //  - What must I do to be saved?
             this.answers = this.model.get('answers')
-            this.all_questions = model.questions
+            this.all_questions = model.questions.models
             if (config.use_new_numbers === false){
                 this.questions = this.all_questions.filter(function(q){
                     return typeof q.get('original_number') !== 'undefined'
@@ -79,7 +80,7 @@ define(
             }
             var body = "<p>Dear pastor,</p>"
             body += "<p>I answered the following questions in the Heaven and Hell Machine at "
-            body += window.location.toString()
+            body += "<a href='" + window.location.toString() + "'>" + window.location.toString() + "</a>"
             body += " and got some of them wrong."
             body += " My answers are below. What must I do to be saved?</p>\n\n"
             body += "<p>Sincerely,</p>\n\n"
@@ -92,6 +93,7 @@ define(
                 var num_type = 'new_number'
             }
             _.each(this.questions, function(q){
+                debugger;
                 var grade = thiz.model.get('answers')[q[num_type]]
                 if ((grade == 'right' && q.get('answer') == true) ||
                     (grade == 'wrong' && q.get('answer') == false)){
@@ -111,12 +113,10 @@ define(
             var subject = 'What must I do to be saved?'
             // Compile email here
             //this.$('.score ask_pastor_container').on('click', window.location = 'mailto:' + to + '?subject=' + subject + '&body=' + body)
-            this.$('.score .ask_pastor_container').on('click', function(){
-                debugger;
+            this.$('.ask_pastor_container').on('click', function(){
                 thiz.$('.email_body').html(body)
                 thiz.$('.email_body').removeClass('hidden').show()
             })
-            debugger;
         },
         color_score:function(destination){
             if (destination == 'Hell'){
