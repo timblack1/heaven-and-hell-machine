@@ -1,6 +1,6 @@
 {
-  "name": "heaven-and-hell-machine",
-  "version": "0.0.1-8",
+  "name": "heaven-and-hell-machine-1",
+  "version": "0.0.1-12",
   "type": "app",
   "dependencies": {
     "hoodie-plugin-appconfig": "~0.1.0",
