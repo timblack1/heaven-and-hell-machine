@@ -76,6 +76,10 @@ require(
     'config',
     'model',
     'views/main',
+    'text!views/Credits.html',
+    'text!views/image_pages.html',
+    'text!views/QuestionAnswerContainer/audio_pages.html',
+    'mustache',
     'underscore',
     'backbone_hoodie',
     'jquery_couch'
@@ -83,7 +87,11 @@ require(
     function(
              config,
              model,
-             views
+             views,
+             CreditsTemplate,
+             image_pages,
+             audio_pages,
+             Mustache
         ){
 
        // Create main application
@@ -135,6 +143,7 @@ require(
                 //      Help
                 //          What must I do to be saved?
                 //          Ask a local pastor
+                //           - or -
                 //          I want to join a biblical church!
                 //          Find a local church.
                 
@@ -149,6 +158,33 @@ require(
                 // Render the QuestionAnswerContainerView
                 this.question_answer_container_view = new views.QuestionAnswerContainerView({ el: $('.content') })
                 this.question_answer_container_view.render()
+                // TODO: Move this out into a view
+                // TODO: Give a way to return to the main page
+                // Get credits
+                var images = _.map(image_pages.split('\n'), function(image){
+                    // TODO: Make this not display "Both heaven and hell:" (and similar strings) as a link.
+                    return {url:image}
+                })
+                var sounds = _.chain(audio_pages.split('\n'))
+                    .map(function(sound){
+                        // Remove directory prefixes
+                        sound = sound.replace(/^\.\//, '').replace('good/', '').replace('bad/', '')
+                        // Create URL
+                        var sound_parts = sound.split('__')
+                        var user = sound_parts[1]
+                        var id = sound_parts[0]
+                        var url = 'http://www.freesound.org/people/' + user + '/sounds/' + id
+                        return {url:url}
+                    })
+                    .uniq()
+                    .value()
+                var credits = {
+                    images:images,
+                    sounds:sounds
+                }
+                $('.credits').on('click', function(){
+                    $('.content').html(Mustache.render(CreditsTemplate, credits))
+                })
 
                 // Run tests only if configured to do so
                 var thiz = this
