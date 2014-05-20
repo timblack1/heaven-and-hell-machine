@@ -32,6 +32,12 @@ html, body {
 	filter: none;
 }}
 
+a {
+    color:#b1d9f9;
+}
+a:hover {
+    color:#7fc7ff;
+}
 
 /* ==========================================================================
    Hoodie Sign In / Sign Up / Sign out stylings
@@ -109,7 +115,4 @@ html[data-hoodie-account-status=signedout] .hoodie-account-signedout {
 }
 .answer h3 {
     margin-top: 0.3em;
-}
-.question_nav, .copy {
-  text-shadow:0.4px 0.4px white;
 }
