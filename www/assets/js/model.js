@@ -223,9 +223,11 @@ define([
     modelStore.Score = Backbone.RelationalModel.extend({
         type:'score',
         collection:'Scores',
-        defaults:{
-            'answers':[],
-            'destination':''
+        defaults:function(){
+            return {
+                'answers':[],
+                'destination':''
+            }
         },
         get_destination:function(){
             if (_.contains(this.get('answers'), 'wrong') || this.get('answers').length == 0){

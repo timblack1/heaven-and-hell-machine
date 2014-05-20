@@ -16,7 +16,8 @@ define(
     return Backbone.View.extend({
         initialize: function(){
             _.bindAll(this, 'previous_question', 'next_question', 
-                'rerender_question', 'get_last_number')
+                'rerender_question', 'get_last_number', 'create_score_view',
+                'create_question_view')
         },
         events:{
             "click .previous_question": 'previous_question',
@@ -37,16 +38,82 @@ define(
             this.scores = new model.Scores()
             // Get scores from hoodie.
             this.scores.fetch({success:function(){
-                thiz.score = model.Score.findOrCreate({
-                    type:'score'
-                })
-                thiz.score_view = new ScoreView({
-                    el:thiz.$('.score'),
-                    model:thiz.score
-                })
-                thiz.score_view.render()
+//                 thiz.score = model.Score.findOrCreate({
+//                     type:'score'
+//                 })
+                // Make sure we always get only the first score, in case there is more than one in the
+                //  database.  There never should be more than one, but how else can we be sure to get
+                //  the right one?  model.Score.findOrCreate() doesn't seem to work here.
+                // TODO: if (typeof thiz.score === 'undefined'){ thiz.score = thiz.scores.create() }
+                //  In that case, use a callback.
+                if (thiz.scores.length == 0){
+                    thiz.scores.create({success:function(score){
+                        thiz.score = score
+                        thiz.create_score_view()
+                    }})
+                }else{
+                    thiz.score = thiz.scores.at(0)
+                    thiz.create_score_view()
+                }
             }})
-            
+        },
+        previous_question:function(){
+            // Render the previous question
+            var number = this.question_view.model.get('number')-1;
+            this.rerender_question(number)
+            this.$('.next_question').css({color:''})
+            // Set .previous_question link to lightgray if there are no more questions
+            if (number === 1){
+                this.$('.previous_question').css({color:'lightgray'})
+            }
+        },
+        next_question:function(){
+            // Render the next question
+            var number = this.question_view.model.get('number')+1;
+            this.rerender_question(number)
+            this.$('.previous_question').css({color:''})
+            // Set .next_question link to lightgray if there are no more questions
+            var last_number = this.get_last_number()
+            if (number === last_number){
+                this.$('.next_question').css({color:'lightgray'})
+            }
+        },
+        rerender_question:function(number){
+            if (number !== 0 && number !== this.get_last_number()+1){
+                this.question_view.undelegateEvents()
+                if (config.use_new_numbers === false){
+                    var question = this.questions.findWhere({original_number:number})
+                }else{
+                    var question = this.questions.findWhere({new_number:number})
+                }
+                question.set('number', number)
+                this.question_view = new QuestionView({
+                    el:this.$('.question'),
+                    model:question,
+                    parent:this,
+                    sounds:this.sounds_attributes
+                })
+                this.question_view.render()
+            }
+        },
+        get_last_number:function(){
+            if (config.use_new_numbers === false){
+                var last_number = _.max(_.filter(this.questions.pluck('original_number'),function(item){ return typeof item !== 'undefined'; }))
+            }else{
+                var last_number = _.max(this.questions.pluck('new_number'))
+            }
+            return last_number
+        },
+        create_score_view:function(){
+            this.score_view = new ScoreView({
+                el:this.$('.score'),
+                model:this.score
+            })
+            // TODO: Why is this render needed here, instead of later when we need to display the score?
+            this.score_view.render()
+            this.create_question_view()
+        },
+        create_question_view:function(){
             // Note:  Sounds are from freesound.org
             // -- Good sounds --
             // Ding, angels singing, applause, hymns with edifying, understandable words (sung with an organ?)
@@ -117,53 +184,6 @@ define(
                 sounds:this.sounds_attributes
             })
             this.question_view.render()
-        },
-        previous_question:function(){
-            // Render the previous question
-            var number = this.question_view.model.get('number')-1;
-            this.rerender_question(number)
-            this.$('.next_question').css({color:''})
-            // Set .previous_question link to lightgray if there are no more questions
-            if (number === 1){
-                this.$('.previous_question').css({color:'lightgray'})
-            }
-        },
-        next_question:function(){
-            // Render the next question
-            var number = this.question_view.model.get('number')+1;
-            this.rerender_question(number)
-            this.$('.previous_question').css({color:''})
-            // Set .next_question link to lightgray if there are no more questions
-            var last_number = this.get_last_number()
-            if (number === last_number){
-                this.$('.next_question').css({color:'lightgray'})
-            }
-        },
-        rerender_question:function(number){
-            if (number !== 0 && number !== this.get_last_number()+1){
-                this.question_view.undelegateEvents()
-                if (config.use_new_numbers === false){
-                    var question = this.questions.findWhere({original_number:number})
-                }else{
-                    var question = this.questions.findWhere({new_number:number})
-                }
-                question.set('number', number)
-                this.question_view = new QuestionView({
-                    el:this.$('.question'),
-                    model:question,
-                    parent:this,
-                    sounds:this.sounds_attributes
-                })
-                this.question_view.render()
-            }
-        },
-        get_last_number:function(){
-            if (config.use_new_numbers === false){
-                var last_number = _.max(_.filter(this.questions.pluck('original_number'),function(item){ return typeof item !== 'undefined'; }))
-            }else{
-                var last_number = _.max(this.questions.pluck('new_number'))
-            }
-            return last_number
         }
     });
 });;
