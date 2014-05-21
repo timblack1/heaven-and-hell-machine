@@ -1,7 +1,8 @@
 {
-  "name": "heaven-and-hell-machine-1",
-  "version": "0.0.1-12",
+  "name": "heaven-and-hell-machine",
+  "version": "0.0.1-17",
   "type": "app",
+  "description": "The Heaven and Hell Machine helps you know from the Bible whether you are going to heaven or hell.",
   "dependencies": {
     "hoodie-plugin-appconfig": "~0.1.0",
     "hoodie-plugin-email": "~0.1.1",
