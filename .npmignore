@@ -2,8 +2,5 @@
 .DS_Store
 node_modules
 data
-www/assets/js/vendor
-www/assets/js/vendor/*
-www/assets/js/vendor/**/*
 deploy.sh
 
