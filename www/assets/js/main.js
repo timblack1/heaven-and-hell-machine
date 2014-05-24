@@ -16,7 +16,8 @@ require.config({
       "bootstrap": "vendor/bootstrap/dist/js/bootstrap.min",
       "buzz": "vendor/buzz/dist/buzz",
       "config": "config",
-      "hoodie": "/_api/_files/hoodie", // needs to be made available here for backbone-hoodie to require
+      // "hoodie": "/_api/_files/hoodie", // needs to be made available here for backbone-hoodie to require
+      "hoodie": "hoodie", // needs to be made available here for backbone-hoodie to require
       "jquery": "vendor/jquery/dist/jquery.min",
       // Commented out because it uses $.browser, which is deprecated
       // But this may break msie compatibility!
