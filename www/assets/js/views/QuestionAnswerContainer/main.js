@@ -161,7 +161,7 @@ define(
                     }
                     var dir_sounds = _.where(sounds, {dir:dir, filename_extension:filename_extension})
                     var sound = dir_sounds[_.random(dir_sounds.length-1)]
-                    this.buzz_sound = new buzz.sound('assets/audio/' + ( sound.dir !== '' ? sound.dir + '/' : '' ) + sound.filename, {
+                    this.buzz_sound = new buzz.sound('http://cdn.caneyopc.org/hhm/audio/' + ( sound.dir !== '' ? sound.dir + '/' : '' ) + sound.filename, {
                         formats: [ sound.filename_extension ]
                     });
                     this.buzz_sound.play()
