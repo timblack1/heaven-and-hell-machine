@@ -62,18 +62,20 @@ define(
             var answers = _.clone(score.get('answers'))
             answers[this.model.get('number')] = settings.answer
             // TODO: Save the answers in a correct format, so they all get saved in one model, rather than in many.
+            this.listenTo(score, 'change', function(score){
+                // https://github.com/carltongibson/backbone-hoodie/commit/eba20e57c6b00e136dfcf04573902c6557ce82aa
+                //  says fetch() is needed here to populate the collection with the new model.
+                this.parent.scores.fetch()
+                console.log(answers)
+                // Backbone.hoodie.removeAll('score')
+                console.log(score.get('answers'))
+            })
             // Start here.
             // TODO: There is a problem here:  After calling set(), score.attributes.answers is an empty array!
             //  So then it doesn't get saved to the database.
             score.set({answers:answers})
             // score.trigger('change:answers')
             score.save({answers:answers})
-            // https://github.com/carltongibson/backbone-hoodie/commit/eba20e57c6b00e136dfcf04573902c6557ce82aa
-            //  says fetch() is needed here to populate the collection with the new model.
-            this.parent.scores.fetch()
-            console.log(answers)
-            // Backbone.hoodie.removeAll('score')
-            console.log(score.get('answers'))
         }
     });
 
