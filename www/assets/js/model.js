@@ -1,562 +1,250 @@
-//  -------------------------------------------------------------------
-
-//    // Example of how to save a many-to-many relation to the database
-//    // Create CGroup model
-//    cgroups = new model.CGroups
-//    OPC = cgroups.create({
-//        name:'Orthodox Presbyterian Church',
-//        abbreviation:'OPC'
-//    })
-//    // Instantiate group of congs
-//    congs = new model.Congs
-//    // Instantiate first congregation model
-//    // TODO: Should this be global or not?
-//    cong1 = congs.create({
-//        name:'Caney OPC',
-//        mailing_state:'KS'
-//    },{
-//        success:function(){
-//            // Instantiate second congregation model
-//            cong2 = congs.create({
-//                name:'Bartlesville OPC',
-//                mailing_state:'OK'
-//            },{success:function(){
-//                // Add congregations to cgroup
-//                OPC.get('congregations').add([{_id:cong1.get('_id')},{_id:cong2.get('_id')}])
-//                // Save cgroup to db
-//                OPC.save({_id:OPC.get('_id')},{success:function(){
-//                    $.each([cong1,cong2], function(key, cong){
-//                        cong.get('cgroups').add({_id:OPC.get('_id')})
-//                        cong.save({},{success:function(){
-//                            // Example of how to fetch many-to-many relations from the db
-//                            // Fetch the cong so as to populate its relations in the browser
-//                            cong.fetch({success:function(){
-//                                // Example of how to query for related CGroups
-//                                var cong_cgroups = cong.get('cgroups')
-//                                for (var i=0; i<cong_cgroups.length; i++){
-//                                    var cgroup_id = cong_cgroups.at(i).get('_id')
-//                                    var cgroup = cgroups.get(cgroup_id)
-//                                }
-//                                // Example of how to query by one attribute
-//                                congs_by_name = new model.CongsByName
-//                                congs_by_name.db.keys = ['Caney OPC']
-//                                congs_by_name.fetch({success:function(col, res){
-//                                    var caney_opc = col.at(0)
-//                                }})
-//                            }})
-//                        }})
-//                    })
-//                }})
-//            }})
-//        }
-//    })
-
-//  -------------------------------------------------------------------
-
 // Standard AMD RequireJS define
 define([
         'config',
-        'backbone_couchdb'
-        ], function(config, Backbone){
+        'backbone_hoodie',
+        'text!views/image_filenames.html',
+        ], function(config, Backbone, image_filenames){
     // Fill this with your database information.
-
-    // `ddoc_name` is the name of your couchapp project.
-    Backbone.couch_connector.config.db_name = config.db_name;
-    Backbone.couch_connector.config.ddoc_name = "rcl";
-    // If set to true, the connector will listen to the changes feed
-    //  and will provide your models with real time remote updates.
-    Backbone.couch_connector.config.global_changes = true;
-    // This setting enables the code/features in this pull request:
-    //  https://github.com/janmonschke/backbone-couchdb/pull/25
-    Backbone.couch_connector.config.single_feed = true;
+    
+    Backbone.connect() // creates a new hoodie at Backbone.hoodie
+    var hoodie = Backbone.hoodie
     // Reload the page when the design doc changes
-    var db = config.db
-    changes = db.changes();
-    changes.onChange(function(data){
-        for (var i=0; i<data.results.length; i++){
-            if (data.results[i].id == '_design/rcl'){
-                window.location.reload()
-            }
-        }
-    }) 
-    
-    // Define base classes
-    
-    var CollectionBase = Backbone.Collection.extend({}, {
-        get_one:function(keys, options) {
-            var coll = new this
-            coll.db.keys = keys
-            coll.fetch({
-                success:function(col, res){
-                    var model = col.at(0)
-                    if (typeof(options.success) !== 'undefined'){
-                        options.success(model)
-                    }
-                },
-                error:function(){
-                    console.error('Could not get_one')
-                    if (typeof options.error !== 'undefined'){
-                        options.error()
-                    }
-                }
-            })
-        },
-        create_one:function(attrs_obj, options){
-            var coll = new this
-            var model = coll.create(attrs_obj, {
-                success:function(model){
-                    console.log('create_one: ', model)
-                    if (typeof(options.success) !== 'undefined'){
-                        options.success(model)
-                    }
-                },
-                error:function(){
-                    console.error('Could not create_one')
-                    if (typeof options.error !== 'undefined'){
-                        options.error()
-                    }
-                }
-            })
-        },
-        get_or_create_one:function(search_keys, attrs, options){
-            var thiz = this
-            // TODO: First use modeltype.findOrCreate() to return the model if it already exists in the local store
-            this.get_one(search_keys,{success:function(doc){
-                if (typeof(doc) === 'undefined'){
-                    // The doc didn't exist in the db, so create and return it
-                    thiz.create_one(attrs, {
-                        success:function(doc){
-                            if (typeof(options.success) !== 'undefined'){
-                                options.success(doc)
-                            }
-                        }
-                    })
-                }else{
-                    // The doc did exist in the db, so return it
-                    if (typeof(options.success) !== 'undefined'){
-                        options.success(doc)
-                    }
-                }
-            }})
-        }
-    })
+    // TODO: This doesn't work with Hoodie, since there isn't a design doc in the database.
+//     hoodie.store.on('change', function(eventName, data){
+//         for (var i=0; i<data.results.length; i++){
+//             if (data.results[i].id == '_design/rcl'){
+//                 window.location.reload()
+//             }
+//         }
+//     })
+    // Provide a model scope for backbone-relational to use to relate models
+    modelStore = {}
+    Backbone.Relational.store.addModelScope(modelStore)
     
     // Define model objects & collections for querying the database
     
     // Define link objects for many-to-many relations
-    CGroup_Cong = Backbone.RelationalModel.extend({})
-    CGroup_Person = Backbone.RelationalModel.extend({})
-    CGroup_Role = Backbone.RelationalModel.extend({})
-    Cong_Person = Backbone.RelationalModel.extend({})
-    Office_Person = Backbone.RelationalModel.extend({})
-    Person_Role = Backbone.RelationalModel.extend({})
 
-    CGroup = Backbone.RelationalModel.extend({
-        collection:'CGroups',
-        urlRoot:'/cgroup',
-        // All defaults are commented out because they are here only for the purpose 
-        //  of documenting the schema, and we don't need all these attributes to appear 
-        //  on every actual instance of a model object.
-//        defaults:{
-//            name: '',
-//            abbreviaton: '',
-//            website: ''
-//        },
-        relations:[
-                   {
-                       type:'HasMany', // many-to-many
-                       key: 'congregations',
-                       relatedModel: 'CGroup_Cong',
-                       collectionType:'Congs',
-                       //includeInJSON:'_id',
-                       includeInJSON:true,
-                       reverseRelation: {
-                           key: 'cgroup'
-                       }
-                   },
-                   {
-                       type:'HasMany', // many-to-many
-                       key: 'people',
-                       relatedModel: 'CGroup_Person',
-                       collectionType:'People',
-                       includeInJSON:'_id',
-                       reverseRelation: {
-                           key: 'cgroup',
-                           includeInJSON:'_id'
-                       }
-                   },
-                   {
-                       type:'HasMany', // many-to-many
-                       key: 'roles',
-                       relatedModel: 'CGroup_Role',
-                       collectionType:'Roles',
-                       includeInJSON:'_id',
-                       reverseRelation: {
-                           key: 'cgroup',
-                           includeInJSON:'_id'
-                       }
-                   },
-                   {
-                       type:'HasMany', // one-to-many
-                       key: 'directories',
-                       relatedModel: 'Directory',
-                       collectionType:'Directories',
-                       includeInJSON:'_id',
-                       // reverseRelation: {
-                       //     key: 'cgroup',
-                       //     includeInJSON:'_id'
-                       // }
-                   }
-                   ]
-    })
-    CGroups = CollectionBase.extend({
-        model:CGroup,
-        url:'/cgroups'
-    })
-    CGroupsByAbbrOrName = CollectionBase.extend({
-        model:CGroup,
-        url:'/cgroups',
-        db:{
-            view: 'cgroups_by_abbreviation_or_name'
-        }
-    })
-    Cong = Backbone.RelationalModel.extend({
-      urlRoot:'/cong',
-      collection:'Congs',
-//      defaults:{
-//          name : '',
-//          meeting_address1 : '',
-//          meeting_address2:'',
-//          meeting_city:'',
-//          meeting_region:'',
-//          meeting_state:'',
-//          meeting_zip:'',
-//          meeting_country:'',
-//          lat:'',
-//          lng:'',
-//          mailing_address1:'',
-//          mailing_address2:'',
-//          mailing_city:'',
-//          mailing_state:'',
-//          mailing_zip:'',
-//          mailing_country:'',
-//          phone:'',
-//          fax:'',
-//          email:'',
-//          website:'',
-//          sermons_url:'',
-//          service_info:'',
-//          other_info:'',
-//          presbytery_name:'',
-//          pastor_name:'',
-//          contact_type:'',
-//          contact_name:'',
-//          date_founded:'', // date
-//          number_of_members:'', // integer
-//          range_of_number_of_members:'', // textual range, like '20-30' members, where estimates are 
-//                                         //   permitted/preferred or the only available data
-//          organized:'', // boolean, defines whether this is a mission work or an organized congregation
-//          source:'', // Foreign key:  Which source this cong's data came from
-//          source_cong_id:'', // The ID of this cong in the source's database
-//      },
-        initialize: function(){
-            // Make congs save themselves immediately when their attributes change
-            //    to make Backgrid more useful
-            Backbone.RelationalModel.prototype.initialize.apply(this, arguments);
-            this.on("change", function (model, options) {
-                if (options && options.save === false) return;
-                model.save();
-            });
-        },
-      relations:[
-                 {
-                     type:'HasMany', // many-to-many
-                     key: 'cgroups',
-                     relatedModel: 'CGroup_Cong',
-                     collectionType:'CGroups',
-                     includeInJSON:true,
-                     reverseRelation: {
-                         key: 'congregation',
-                         includeInJSON:'_id'
-                     }
-                 },
-                 {
-                     type:'HasMany', // many-to-many
-                     key: 'people',
-                     relatedModel: 'Cong_Person',
-                     collectionType:'People',
-                     includeInJSON:'_id',
-                     reverseRelation: {
-                         key: 'congregation',
-                         includeInJSON:'_id'
-                     }
-                 }
-                 ]
-    })
-    Congs = CollectionBase.extend({
-        model:Cong,
-        url:'/congs'
-    })
-    CongsByName = CollectionBase.extend({
-        model:Cong,
-        url:'/congs',
-        db:{
-            view: 'congs_by_name'
-        }
-    })
-    Directory = Backbone.RelationalModel.extend({
-        collection:'Directories',
-        urlRoot:'/directory',
-//          defaults:{
-//          url:'', // url of directory's main page
-//          url_html:'', // HTML of directory's main page
-//          get_url_html:'', // '', 'requested', 'getting', or 'gotten'
-//          pagetype:'', // html or rss
-//          state_page_urls:'', // template URL of state pages
-//          state_url_html:'', // HTML of state page
-//          state_url_method:'', // 'get' or 'post', tells Node script which to use
-//          get_state_url_html:'', // '', 'requested', 'getting', or 'gotten'
-//          state_page_values:[], // list of select box options for this directory's states
-//          select_element_xpath:'' // xpath of the select element containing state IDs
-//        },
-        relations:[
-            {
-               type:'HasOne', // many-to-one
-               key: 'cgroup',
-               // TODO: the directory's 'cgroup' is null in the db
-               relatedModel: 'CGroup', // was 'CGroup_Directory'
-               collectionType:'CGroups',
-               includeInJSON:'_id',
-               // reverseRelation: {
-               //     key: 'directories',
-               //     // TODO: Is this needed?
-               //     includeInJSON:'_id'
-               // }
-            }
-        ],
-        db:{
-            changes:true
-        }
-    })
-    Directories = CollectionBase.extend({
-        model:Directory,
-        url:'/directory'
-    })
-    // TODO: This is deprecated because it can be created dynamically when needed
-    DirectoriesByURL = CollectionBase.extend({
-        model:Directory,
-        url:'/directory',
-        db:{
-            view: 'directories_by_url'
-        },
-        initialize:function(){
-            // TODO: Should we proliferate collections here in the model, or create them dynamically in the client code?
-            // console.error('DirectoriesByURL is deprecated.  Please change to use something like:\n\ndb:{\n\tview: \'directories_by_url\'\n}')
-        }
-    })
-    Person = Backbone.RelationalModel.extend({
-        urlRoot:'/person',
-        collection:'People',
-//        defaults: {
-//                    prefix:'',
-//                    firstname:'',
-//                    lastname:'',
-//                    suffix:'',
-//                    phone:'',
-//                    email:''
-//        },
-        relations:[
-                   {
-                       type:'HasMany', // many-to-many
-                       key: 'congregations',
-                       relatedModel: 'Cong_Person',
-                       collectionType:'Congs',
-                       includeInJSON:'_id',
-                       reverseRelation: {
-                           key: 'person',
-                           includeInJSON:'_id'
-                       }
-                   },
-                   // TODO: create link object
-                   {
-                       type:'HasMany', // many-to-many
-                       key: 'groups',
-                       relatedModel: 'CGroup_Person',
-                       collectionType:'CGroups',
-                       includeInJSON:'_id',
-                       reverseRelation: {
-                           key: 'person',
-                           includeInJSON:'_id'
-                       }
-                   },
-                   // TODO: create link object
-                   {
-                       type:'HasMany', // many-to-many
-                       key: 'roles',
-                       relatedModel: 'Person_Role',
-                       collectionType:'Roles',
-                       includeInJSON:'_id',
-                       reverseRelation: {
-                           key: 'person',
-                           includeInJSON:'_id'
-                       }
-                   },
-                   // TODO: create link object
-                   {
-                       type:'HasMany', // many-to-many
-                       key: 'offices',
-                       relatedModel: 'Office_Person',
-                       collectionType:'Offices',
-                       includeInJSON:'_id',
-                       reverseRelation: {
-                           key: 'person',
-                           includeInJSON:'_id'
-                       }
-                   }
-                   ]
-    })
-    People = CollectionBase.extend({
-        model:Person,
-        url:'/people'
-    })
-    Office = Backbone.RelationalModel.extend({
-        collection:'Offices',
-        urlRoot:'/office',
-//        defaults:{
-//            name: ""
-//        },
-        relations:[
-                   {
-                       type:'HasMany', // many-to-many
-                       key: 'people',
-                       relatedModel: 'Office_Person',
-                       collectionType:'People',
-                       includeInJSON:'_id',
-                       reverseRelation: {
-                           key: 'office',
-                           // TODO: Is this needed?
-                           includeInJSON:'_id'
-                       }
-                   }
-                   ]
-    })
-    Offices = CollectionBase.extend({
-        model:Office,
-        url:'/offices'
-    })
-    Role = Backbone.RelationalModel.extend({
-        collection:'Roles',
-        urlRoot:'/role',
-//        defaults:{
-//            name:''
-//        },
-        relations:[
-                   {
-                       type:'HasMany', // many-to-many
-                       key: 'people',
-                       relatedModel: 'Person_Role',
-                       collectionType:'People',
-                       includeInJSON:'_id',
-                       reverseRelation: {
-                           key: 'role',
-                           // TODO: Is this needed?
-                           includeInJSON:'_id'
-                       }
-                   },
-                   {
-                       type:'HasMany', // many-to-many
-                       key: 'cgroups',
-                       relatedModel: 'CGroup_Role',
-                       collectionType:'CGroups',
-                       includeInJSON:'_id',
-                       reverseRelation: {
-                           key: 'role',
-                           // TODO: Is this needed?
-                           includeInJSON:'_id'
-                       }
-                   }
-                   ]
-    })
-    Roles = CollectionBase.extend({
-        model:Role,
-        url:'/roles'
-    })
+    // Define main model objects
     
-    // Define convenience functions
-    // TODO: Put these convenience functions into a base class/object that can be used as a mixin
-    //  in the objects above.
-    function get_one(collection, keys, options) {
-        var coll = new collection
-        coll.db.keys = keys
-        coll.fetch({success:function(col, res){
-            var model = col.at(0)
-            if (typeof(options.success) !== 'undefined'){
-                options.success(model)
-            }
+    // TODO: Get the images listed in image_filenames.html for backgrounds
+    //  Use the wikimedia imageinfo API per instructions at:
+    //      http://www.mediawiki.org/wiki/Extension:CommonsMetadata
+    //  like this:
+    //      https://commons.wikimedia.org/w/api.php?action=query&prop=imageinfo&format=json&iiprop=extmetadata&iilimit=10&titles=File%3ACommon%20Kingfisher%20Alcedo%20atthis.jpg
+    //  Parse Pinterest HTML pages for:
+    //      head meta property="og:image" content="[image url here]"
+    //      head meta property="og:url" content="[page url here]"
+    //      head meta property="description" content="[description here]"
+    //      head title.text()
+    //  Flickr:  Use API at https://www.flickr.com/services/api/, especially:
+    //      https://www.flickr.com/services/api/flickr.photos.getInfo.html
+    //  http://www.geograph.org.uk/photo/3467510
+    //  http://pixabay.com
+    //  http://www.fotopedia.com
+    //  deviantart.com
+    // Parse image_filenames into lists of URLs
+    var sections = image_filenames.split('Hell:')
+    var regex = /(^\n+|\n+$)/g
+    modelStore.hell = sections[1].replace(regex, '').split('\n')
+    // This is necessary because pixabay doesn't permit hotlinking.
+    modelStore.hell = _.map(modelStore.hell, function(item){
+        if (item.indexOf('http') !== 0){
+            return 'assets/img/hell/' + item
+        }else{
+            return item
         }
-        })
-    }
-    function create_one(collection, attrs_obj, options){
-        var coll = new collection
-        var model = coll.create(attrs_obj, {success:function(model){
-            if (typeof(options.success) !== 'undefined'){
-                options.success(model)
+    })
+    var hh = sections[0].split('Heaven:')
+    modelStore.heaven = hh[1].replace(regex, '').split('\n')
+    // This is necessary because pixabay doesn't permit hotlinking.
+    modelStore.heaven = _.map(modelStore.heaven, function(item){
+        if (item.indexOf('http') !== 0){
+            return 'assets/img/heaven/' + item
+        }else{
+            return item
+        }
+    })
+    modelStore.heaven_and_hell = hh[0].replace('Both heaven and hell:\n','').replace(regex, '').split('\n')
+
+    modelStore.Question = Backbone.RelationalModel.extend({
+        type:'question',
+        collection:'Questions'
+    })
+    modelStore.Questions = Backbone.Collection.extend({
+        model:modelStore.Question,
+        url:'/question'
+    })
+    // Bootstrap the questions into Backbone here
+    // Load the questions into a collection
+    // Create two orders of questions as listed below:
+    //  old:    1,2,3,4,5,6,7
+    //  new:    4,2b,3,2,1,7,6,8
+    modelStore.questions = new modelStore.Questions;
+    modelStore.questions.add([
+        {
+            original_number:1,
+            new_number:5,
+            text:"There are many ways to get to heaven, so it really doesn&rsquo;t matter what religion you follow as long as you are sincere.",
+            answer:false,
+            scripture:[{
+                text:'Jesus said to him, &lsquo;I am the way, the truth, and the life; no one comes to the Father, but through Me.&rsquo;',
+                reference:'John 14:6'
+            }]
+        },
+        {
+            original_number:2,
+            new_number:4,
+            text:"God cares about right and wrong.",
+            answer:true,
+            scripture:[{
+                text:'For rulers hold no terror for those who do right, but for those who do wrong.  Do you want to be free from fear of the one in authority? Then do what is right and he will commend you.',
+                reference:'Romans 13:3'
+            }]
+        },
+        {
+            original_number:3,
+            new_number:3,
+            text:"God will punish sin.",
+            answer:true,
+            scripture:[
+                {
+                    text:'I will punish the world for its evil, the wicked for their sins.',
+                    reference:'Isaiah 13:11'
+                },
+                {
+                    text:'He will punish those who do not know God and do not obey the gospel of our Lord Jesus.',
+                    reference:'2 Thessalonians 1:8'
+                },
+                {
+                    text:'This is what the LORD says about this people:  &lsquo;They greatly love to wander; they do not restrain their feet.  So the LORD does not accept them; he will now remember their wickedness and punish them for their sins.&rsquo;',
+                    reference:'Jeremiah 14:10'
+                },
+            ]
+        },
+        {
+            original_number:4,
+            new_number:1,
+            text:"Hell is not real.  God would never send anyone to such a terrible place.",
+            answer:false,
+            scripture:[
+                {
+                    text:'And in Hades he lifted up his eyes, being in torment and saw Abraham far away, and Lazarus in his bosom.',
+                    reference:'Luke 16:23'
+                },
+                {
+                    text:'His winnowing fork is in his hand, and he will clear his threshing floor, gathering his wheat into the barn and burning up the chaff with unquenchable fire.',
+                    reference:'Matthew 3:12'
+                },
+                {
+                    text:'If anyone&rsquo;s name was not found written in the book of life, he was thrown into the lake of fire.',
+                    reference:'Revelation 20:15'
+                },
+            ]
+        },
+        {
+            original_number:5,
+            text:"Everyone who has ever lived will have to one day stand before God to be judged.",
+            answer:true,
+            scripture:[
+                {
+                    text:'...it is appointed for men to die once and after this comes the judgment.',
+                    reference:'Hebrews 9:27'
+                },
+                {
+                    text:'For we must all appear before the judgment seat of Christ, that each one may receive what is due him for the things done while in the body, whether good or bad.',
+                    reference:'2 Corinthians 5:10'
+                }
+            ]
+        },
+        {
+            original_number:6,
+            text:"All humans are born with a sin nature, and because of sin, are headed for Hell.",
+            answer:true,
+            scripture:[
+                {
+                    text:'If we say that we have no sin, we are deceiving ourselves, and the truth is not in us.',
+                    reference:'1 John 1:8'
+                },
+                {
+                    text:'Surely I was sinful at birth, sinful from the time my mother conceived me.',
+                    reference:'Psalm 51:5'
+                },
+                {
+                    text:'There is none righteous, not even one; there is none who understands, there is none who seeks for God; all have turned aside, together they have become useless; there is none who does good, there is not even one.',
+                    reference:'Romans 3:10-12'
+                }
+            ]
+        },
+        {
+            original_number:7,
+            new_number:6,
+            text:"If a person tries his best to live by the Ten Commandments, and he does more good deeds than bad deeds, he will go to heaven.",
+            answer:false,
+            scripture:[
+                {
+                    text:'...by the works of the Law no flesh will be justified in His sight.',
+                    reference:'Romans 3:20'
+                },
+                {
+                    text:'For all of us have become like one who is unclean, and all of our righteous deeds are like a filthy garment...',
+                    reference:'Isaiah 64:6'
+                },
+                {
+                    text:'For whoever keeps the whole law and yet stumbles at just one point is guilty of breaking all of it.',
+                    reference:'James 2:10'
+                }
+            ]
+        },
+        {
+            new_number:2,
+            text:"If you hurt with your words or show hate toward others you are breaking the commandment on murder.",
+            answer:true,
+            scripture:[
+                {
+                    text:'We know that we have passed from death to life, because we love our brothers.  Anyone who does not love remains in death.  Anyone who hates his brother is a murderer, and you know that no murderer has eternal life in him.',
+                    reference:'1 John 3:14-15'
+                }
+            ]
+        },
+        {
+            new_number:8,
+            text:"The bad news -- no one is good enough to get to heaven.<br />The Good News -- Jesus&rsquo; perfect life and death on the cross paid for our acts of disobedience.<br />You must believe on him and repent of your sins.",
+            answer:true,
+            scripture:[
+                {
+                    text:'A trustworthy saying that deserves full acceptance:  Christ Jesus came into the world to save sinners--of whom I am the worst. (The apostle Paul)',
+                    reference:'1 Timothy 1:15'
+                }
+            ]
+        }
+    ])
+
+    modelStore.Score = Backbone.RelationalModel.extend({
+        type:'score',
+        collection:'Scores',
+        defaults:function(){
+            return {
+                'answers':{},
+                'destination':''
             }
-        }})
-    }
-    function get_or_create_one(coll, search_keys, attrs, options){
-        get_one(coll, 
-              search_keys,
-              {success:function(doc){
-                  if (typeof(doc) === 'undefined'){
-                      // The doc didn't exist in the db, so create it
-                      create_one(coll,
-                               attrs,
-                               {success:function(doc){
-                                   if (typeof(options.success) !== 'undefined'){
-                                       options.success(doc)
-                                   }
-                               }}
-                      )
-                  }else{
-                      // The doc did exist in the db, so use it
-                      if (typeof(options.success) !== 'undefined'){
-                          options.success(doc)
-                      }
-                  }
-              }}
-        )
-    }
-    
-    return {
-        // link object models
-        CGroup_Cong: CGroup_Cong,
-        Cong_Person: Cong_Person,
-        CGroup_Person: CGroup_Person,
-        CGroup_Role: CGroup_Role,
-        Office_Person: Office_Person,
-        Person_Role: Person_Role,
-        // regular object models
-        CGroup: CGroup,
-        Cong: Cong,
-        Directory: Directory,
-        Directories: Directories,
-        Person: Person,
-        Office: Office,
-        Role: Role,
-        // collections
-        CGroups:CGroups,
-        CGroupsByAbbrOrName:CGroupsByAbbrOrName,
-        Congs:Congs,
-        CongsByName: CongsByName,
-        Directories:Directories,
-        DirectoriesByURL:DirectoriesByURL,
-        People:People,
-        Offices:Offices,
-        Roles:Roles,
-        // Convenience functions
-        get_one:get_one,
-        create_one:create_one,
-        get_or_create_one:get_or_create_one
-    }
+        },
+        get_destination:function(){
+            if (_.contains(this.get('answers'), 'wrong') || _.size(this.get('answers')) == 0){
+                var destination = 'Hell'
+                this.set('destination', 'Hell')
+            }else{
+                var destination = 'Heaven'
+                this.set('destination', 'Heaven')
+            }
+            return destination
+        }
+    })
+    modelStore.Scores = Backbone.Collection.extend({
+        model:modelStore.Score,
+        url:'/score'
+    })
+
+
+    return modelStore
 })

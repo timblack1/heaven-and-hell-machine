@@ -11,18 +11,20 @@ require.config({
   paths: {
       "async": "vendor/requirejs-plugins/src/async",
       "backbone": "vendor/backbone/backbone",
-      // Note this may import the .coffee instead of the .js file
-      "backbone_couchdb": "backbone-couchdb/backbone-couchdb",
+      "backbone_hoodie": "vendor/backbone-hoodie/src/backbone-hoodie",
       "backbone_relational": "vendor/backbone-relational/backbone-relational",
       "bootstrap": "vendor/bootstrap/dist/js/bootstrap.min",
       "buzz": "vendor/buzz/dist/buzz",
       "config": "config",
+      // "hoodie": "/_api/_files/hoodie", // needs to be made available here for backbone-hoodie to require
+      "hoodie": "hoodie", // needs to be made available here for backbone-hoodie to require
       "jquery": "vendor/jquery/dist/jquery.min",
-      "jquery_migrate": "vendor/jquery-migrate/jquery-migrate",
       // Commented out because it uses $.browser, which is deprecated
       // But this may break msie compatibility!
       //"jquery_couch": "/_utils/script/jquery.couch",
+      // TODO:  Is this still needed?
       "jquery_couch": "jquery.couch",
+      "jquery_migrate": "vendor/jquery-migrate/jquery-migrate",
       "model": "model",
       "mustache": "vendor/mustache/mustache",
       "text": "vendor/requirejs-text/text",
@@ -36,10 +38,10 @@ require.config({
       backbone_relational: {
           deps: ["backbone"]
       },
-      backbone_couchdb: {
-          deps: ["backbone_relational", "jquery_couch"],
+      backbone_hoodie: {
+          deps: ["backbone_relational"],
           init: function(){
-              // TODO: Handle injecting Backbone.RelationalModel into backbone_couchdb here
+              // TODO: Handle injecting Backbone.RelationalModel into backbone_hoodie here
               // return this.
           },
           exports: 'Backbone'
@@ -48,6 +50,9 @@ require.config({
       "bootstrap": {
           deps: ["jquery"]
       },
+      "bootstrap_modalform":{
+          deps: ["bootstrap"]
+      },
       jquery_couch: {
           deps: ["jquery", "jquery_migrate"]
       },
@@ -55,7 +60,7 @@ require.config({
           deps: ["jquery"]
       },
       model: {
-          deps: ["jquery", "config", "backbone", "backbone_relational", "backbone_couchdb"]
+          deps: ["jquery", "config", "backbone_hoodie"]
       },
       mustache: {
           exports: ["Mustache"]
@@ -72,14 +77,22 @@ require(
     'config',
     'model',
     'views/main',
+    'text!views/Credits.html',
+    'text!views/image_pages.html',
+    'text!views/QuestionAnswerContainer/audio_pages.html',
+    'mustache',
     'underscore',
-    'backbone_couchdb',
+    'backbone_hoodie',
     'jquery_couch'
     ], 
     function(
              config,
              model,
-             views
+             views,
+             CreditsTemplate,
+             image_pages,
+             audio_pages,
+             Mustache
         ){
 
        // Create main application
@@ -87,8 +100,8 @@ require(
             initialize : function(){
                 // Make it easy to reference this object in event handlers
                 //_.bindAll(this, 'find_a_church', 'import_directory')
-                // initialize Hoodie
-                var hoodie  = new Hoodie()
+                // This is needed to get hoodie.accountbar.bootstrap.js to work.
+                hoodie = new Hoodie()
             },
             // Set up URLs here
             // TODO: Set CouchDB routing for URLs it doesn't understand.  Is there a way to do this
@@ -113,48 +126,66 @@ require(
 //                 this.default_view = this[config.default_view]
 //                 this.default_view.render()
                 
-                // Example code from Hoodie's app template:
-                // ----------------------------------------
-                // // initial load of all todo items from the store
-                // hoodie.store.findAll('todo').then( function(todos) {
-                //   todos.sort( sortByCreatedAt ).forEach( addTodo )
-                // })
-
-                // // when a new todo gets stored, add it to the UI
-                // hoodie.store.on('add:todo', addTodo)
-                // // clear todo list when the get wiped from store
-                // hoodie.account.on('signout', clearTodos)
-
-                // // handle creating a new task
-                // $('#todoinput').on('keypress', function(event) {
-                //   if (event.keyCode == 13) { // ENTER
-                //     hoodie.store.add('todo', {title: event.target.value});
-                //     event.target.value = '';
-                //   }
-                // })
-
-                // TODO: Outline main collection types
-                // TODO: Outline main templates
+                // TODO: Outline structure of main views & templates
                 //  QuestionAnswerContainer
+                //      Nav
                 //      Question
-                //          Nav
-                //          Number
+                //          Heading: Number
                 //          Text
-                //          Help
-                //      AnswerList
+                //          Buttons
                 //          Answer
-                //              Checkbox
-                //              Letter
-                //              Text
-                //          Help
-                //      Scripture
-                //          Text
-                //          Help
+                //              Heading
+                //              AnswerList
+                //                  Scripture
+                //                      Text
+                //                      Reference
                 //  Score
+                //      You are going to: destination
+                //      Help
+                //          What must I do to be saved?
+                //          Ask a local pastor
+                //           - or -
+                //          I want to join a biblical church!
+                //          Find a local church.
+                
+                // Render the background image
+                $('.background').css('opacity','0').css({
+                    'background':" #000 url(" + model.heaven_and_hell[_.random(model.heaven_and_hell.length-1)] + ") no-repeat center center fixed",
+                    'background-size':'cover'
+                }).animate({ opacity: 1 }, { duration: 1000 });
+                
+                // TODO: Make footer stick to the bottom of the page.
                 
                 // Render the QuestionAnswerContainerView
                 this.question_answer_container_view = new views.QuestionAnswerContainerView({ el: $('.content') })
                 this.question_answer_container_view.render()
+                // TODO: Move this out into a view
+                // TODO: Give a way to return to the main page
+                // Get credits
+                var images = _.map(image_pages.split('\n'), function(image){
+                    // TODO: Make this not display "Both heaven and hell:" (and similar strings) as a link.
+                    return {url:image}
+                })
+                var sounds = _.chain(audio_pages.split('\n'))
+                    .map(function(sound){
+                        // Remove directory prefixes
+                        sound = sound.replace(/^\.\//, '').replace('good/', '').replace('bad/', '')
+                        // Create URL
+                        var sound_parts = sound.split('__')
+                        var user = sound_parts[1]
+                        var id = sound_parts[0]
+                        var url = 'http://www.freesound.org/people/' + user + '/sounds/' + id
+                        return {url:url}
+                    })
+                    .uniq()
+                    .value()
+                var credits = {
+                    images:images,
+                    sounds:sounds
+                }
+                $('.credits').on('click', function(){
+                    $('.content').html(Mustache.render(CreditsTemplate, credits))
+                })
 
                 // Run tests only if configured to do so
                 var thiz = this

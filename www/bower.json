@@ -4,7 +4,7 @@
   "authors": [
     "Tim Black <tim@alwaysreformed.com>"
   ],
-  "description": "The Heaven and Hell Machine helps you know from the Bible whether you are going to heaven or hell.",
+  "description": "The Heaven and Hell Machine helps you know from the Bible whether you are going to heaven or hell, and offers to connect you to a local pastor to help you go to heaven.",
   "main": "assets/js/main.js",
   "moduleType": [
     "amd"
@@ -24,7 +24,7 @@
     "bootstrap": "~3.1.1",
     "backbone-relational": "~0.8.8",
     "mustache": "~0.8.1",
-    "backbone-couchdb": "*",
+    "requirejs": "latest",
     "requirejs-plugins": "~1.0.2",
     "requirejs-text": "~2.0.12",
     "jquery-migrate": "~1.2.1",

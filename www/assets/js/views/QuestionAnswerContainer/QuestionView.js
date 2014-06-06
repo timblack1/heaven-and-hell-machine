@@ -1,7 +1,7 @@
 define(
    [
     'config',
-    'backbone',
+    'backbone_hoodie',
     'mustache',
     'text!views/QuestionAnswerContainer/Question.html'
     ], 
@@ -29,12 +29,14 @@ define(
                 right:{
                     color:'green',
                     dir:'good',
-                    answer:'right'
+                    answer:'right',
+                    correct:'Correct'
                 },
                 wrong:{
                     color:'red',
                     dir:'bad',
-                    answer:'wrong'
+                    answer:'wrong',
+                    correct:'Incorrect'
                 }
             }
             if (($(event.target).hasClass('true') && this.model.get('answer') === true) ||
@@ -48,17 +50,19 @@ define(
             }
         },
         apply_settings:function(settings){
-            // Play sound and 
-            // TODO: provide overlay (or other visual notification) for whether they got it right or not.
+            // Play sound and provide overlay (or other visual notification) for whether they got it right or not.
             //  E.g., thunder and lightning, a glow with the sound of angels singing,
             //      shake page, flash question or page outline red or green, etc.
             //  A variety of such good and bad sounds/overlays would be fun.
             this.$('.answer p').css({'color':settings.color})
             this.sounds.play(settings.dir)
-            var answers = _.clone(this.parent.status_view.model.get('answers'))
+            this.$('.correct').text(settings.correct)
+            var score = this.parent.score
+            var answers = _.clone(score.get('answers'))
             answers[this.model.get('number')] = settings.answer
-            this.parent.status_view.model.set('answers', answers)
+            score.save({answers:answers})
         }
     });
 
 });
+

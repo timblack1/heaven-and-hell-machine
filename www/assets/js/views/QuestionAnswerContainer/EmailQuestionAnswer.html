@@ -1,0 +1,14 @@
+{{#grade}}
+<h3>Question {{number}}:</h3>
+<p>{{{text}}}</p>
+<div>
+    <h3>I said this was {{my_answer}}.  According to the Bible, my answer was {{grade}}.</h3>
+    <h3>In the Bible, God says,</h3>
+    <div>
+        {{#scripture}}
+            <p>{{{text}}}</p>
+            <p>- {{reference}}</p>
+        {{/scripture}}
+    </div>
+</div>
+{{/grade}}
