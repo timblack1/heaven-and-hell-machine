@@ -78,6 +78,7 @@ define(
                     return typeof q.get('new_number') !== 'undefined'
                 })
             }
+            // TODO: Consider using a template here.
             var body = "<p>Dear pastor,</p>"
             body += "<p>I answered the following questions in the Heaven and Hell Machine at "
             var url = window.location.toString()
@@ -87,15 +88,11 @@ define(
             body += "<p>Sincerely,</p>\n\n"
             body += "<p>[Enter your name here]</p>\n\n"
             body += "<hr />"
-            // TODO: Convert answers from an array to an object, and put my_answer into answers
             if (config.use_new_numbers === false){
                 var num_type = 'original_number'
             }else{
                 var num_type = 'new_number'
             }
-            // TODO: This is only rendering for the first question, even when I answer 
-            //  the second question wrong.
-            //  The cause appears to be due to not finding the right score model in the other file.
             _.each(this.questions, function(q){
                 var grade = thiz.model.get('answers')[q.get([num_type])]
                 if ((grade == 'right' && q.get('answer') == true) ||
