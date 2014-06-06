@@ -225,12 +225,12 @@ define([
         collection:'Scores',
         defaults:function(){
             return {
-                'answers':[],
+                'answers':{},
                 'destination':''
             }
         },
         get_destination:function(){
-            if (_.contains(this.get('answers'), 'wrong') || this.get('answers').length == 0){
+            if (_.contains(this.get('answers'), 'wrong') || _.size(this.get('answers')) == 0){
                 var destination = 'Hell'
                 this.set('destination', 'Hell')
             }else{
