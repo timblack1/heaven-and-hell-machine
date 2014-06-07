@@ -44,8 +44,6 @@ define(
                 // Make sure we always get only the first score, in case there is more than one in the
                 //  database.  There never should be more than one, but how else can we be sure to get
                 //  the right one?  model.Score.findOrCreate() doesn't seem to work here.
-                // TODO: if (typeof thiz.score === 'undefined'){ thiz.score = thiz.scores.create() }
-                //  In that case, use a callback.
                 if (thiz.scores.length == 0){
                     thiz.scores.create({success:function(score){
                         thiz.score = score
