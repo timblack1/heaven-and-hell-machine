@@ -30,7 +30,7 @@ define(
             this.$('.previous_question').css({color:'lightgray'})
             
             // Create a section in this container which reports to the user where they will go:  Heaven or Hell.
-            // TODO: Offer help to get to heaven or to avoid going to hell (ask a local pastor, 
+            // Offer help to get to heaven or to avoid going to hell (ask a local pastor, 
             //      or link to gospel presentations).
             //  Create a new section in this container which reports to the user where they will go:  Heaven or Hell
             //  and offers help to get there or to avoid going there (ask a local pastor, or link to gospel presentations).

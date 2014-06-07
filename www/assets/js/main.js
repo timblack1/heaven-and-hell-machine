@@ -160,7 +160,6 @@ require(
                 this.question_answer_container_view = new views.QuestionAnswerContainerView({ el: $('.content') })
                 this.question_answer_container_view.render()
                 // TODO: Move this out into a view
-                // TODO: Give a way to return to the main page
                 // Get credits
                 var images = _.map(image_pages.split('\n'), function(image){
                     // TODO: Make this not display "Both heaven and hell:" (and similar strings) as a link.
