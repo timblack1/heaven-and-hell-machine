@@ -4,7 +4,7 @@
   "authors": [
     "Tim Black <tim@alwaysreformed.com>"
   ],
-  "description": "The Heaven and Hell Machine helps you know from the Bible whether you are going to heaven or hell.",
+  "description": "The Heaven and Hell Machine helps you know from the Bible whether you are going to heaven or hell, and connects you to a local pastor either to learn how to be saved or how you can join a Biblical church.",
   "main": "assets/js/main.js",
   "moduleType": [
     "amd"
